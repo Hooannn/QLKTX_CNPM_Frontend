@@ -1,7 +1,6 @@
 import { useMutation } from "@tanstack/react-query";
-import cookies from "../libs/cookies";
 import { onError } from "../utils/error-handlers";
-import { Credentials, IResponseData, IUser } from "../types";
+import { Credentials, IResponseData, IUser, Role } from "../types";
 import { useNavigate } from "react-router-dom";
 import { rawAxios } from "../hooks/useAxiosIns";
 import { toast } from "react-hot-toast";
@@ -11,7 +10,18 @@ const useAuth = () => {
   const { setAccessToken, setLoggedIn, setUser } = useAuthStore();
 
   const saveCredentialsAndRedirect = (user: IUser, accessToken: string) => {
-    const redirectPath = cookies.get("redirect_path") || "/";
+    let redirectPath: string | undefined;
+    switch (user.role) {
+      case Role.ADMIN:
+        redirectPath = "/users-management";
+        break;
+      case Role.STUDENT:
+        redirectPath = "/student";
+        break;
+      default:
+        redirectPath = "/staff";
+        break;
+    }
     setAccessToken(accessToken);
     setLoggedIn(true);
     setUser(user);

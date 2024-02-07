@@ -1,29 +1,15 @@
 import { Sidebar as ProSidebar, Menu, MenuItem } from "react-pro-sidebar";
 import {
-  AiFillVideoCamera,
   AiOutlineDashboard,
   AiOutlineCarryOut,
+  AiOutlineUsergroupAdd,
+  AiOutlineBars,
 } from "react-icons/ai";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import useAuthStore from "../stores/auth";
-const menuItems = [
-  {
-    to: "/",
-    icon: <AiOutlineDashboard size={25} />,
-    label: "Dashboard",
-  },
-  {
-    to: "/calendar",
-    icon: <AiOutlineCarryOut size={25} />,
-    label: "Calendar",
-  },
-  {
-    to: "/meeting",
-    icon: <AiFillVideoCamera size={25} />,
-    label: "Video",
-  },
-];
+import { Button, Image } from "@nextui-org/react";
+import { Role } from "../types";
 export default function Sidebar() {
   const location = useLocation();
   const [collapsed, setCollapsed] = useState(false);
@@ -38,6 +24,75 @@ export default function Sidebar() {
     navigate(item.to);
   };
 
+  const menuItems = useMemo(() => {
+    switch (user?.role) {
+      case Role.STUDENT:
+        return [
+          {
+            to: "/student",
+            icon: <AiOutlineDashboard size={25} />,
+            label: "Thuê phòng",
+          },
+          {
+            to: "/student/rooms",
+            icon: <AiOutlineCarryOut size={25} />,
+            label: "Tra cứu phòng",
+          },
+          {
+            to: "/student/requests",
+            icon: <AiOutlineCarryOut size={25} />,
+            label: "Tra cứu yêu cầu",
+          },
+          {
+            to: "/student/invoices",
+            icon: <AiOutlineCarryOut size={25} />,
+            label: "Tra cứu hoá đơn",
+          },
+        ];
+      case Role.STAFF:
+        return [
+          {
+            to: "/staff",
+            icon: <AiOutlineDashboard size={25} />,
+            label: "Trang chủ",
+          },
+          {
+            to: "/staff/rooms",
+            icon: <AiOutlineDashboard size={25} />,
+            label: "Quản lý phòng",
+          },
+          {
+            to: "/staff/invoices",
+            icon: <AiOutlineDashboard size={25} />,
+            label: "Quản lý hoá đơn",
+          },
+          {
+            to: "/staff/regions",
+            icon: <AiOutlineDashboard size={25} />,
+            label: "Quản lý dãy phòng",
+          },
+          {
+            to: "/staff/requests",
+            icon: <AiOutlineDashboard size={25} />,
+            label: "Duyệt yêu cầu",
+          },
+          {
+            to: "/staff/students",
+            icon: <AiOutlineCarryOut size={25} />,
+            label: "Tra cứu thông tin sinh viên",
+          },
+        ];
+      default:
+        return [
+          {
+            to: "/users-management",
+            icon: <AiOutlineUsergroupAdd size={25} />,
+            label: "Quản lý người dùng",
+          },
+        ];
+    }
+  }, [user]);
+
   useEffect(() => {
     setActiveTab(
       menuItems.find((item) => item.to === location.pathname)?.label as string
@@ -47,8 +102,21 @@ export default function Sidebar() {
     <>
       <ProSidebar collapsed={collapsed} collapsedWidth="100px">
         <div className="h-full flex flex-col align-center px-3">
+          <Button
+            onClick={() => setCollapsed(!collapsed)}
+            isIconOnly
+            className="absolute top-4 right-[-20px]"
+          >
+            <AiOutlineBars className="w-4 h-4" />
+          </Button>
           <div className="w-full py-8">
-            <img className="mx-auto" width="50" src="/vite.svg" alt="logo" />
+            <Image
+              className="mx-auto"
+              removeWrapper
+              width={collapsed ? 50 : 80}
+              src="/logo.png"
+              alt="logo"
+            />
           </div>
           <Menu
             menuItemStyles={{
