@@ -6,71 +6,24 @@ import { useNavigate } from "react-router-dom";
 import { rawAxios } from "../hooks/useAxiosIns";
 import { toast } from "react-hot-toast";
 import useAuthStore from "../stores/auth";
-import useAppStore from "../stores/app";
 const useAuth = () => {
   const navigate = useNavigate();
-  const {
-    setAccessToken,
-    setRefreshToken,
-    setLoggedIn,
-    setUser,
-    reset: resetAuthStore,
-  } = useAuthStore();
-  const { reset: resetAppStore } = useAppStore();
+  const { setAccessToken, setLoggedIn, setUser } = useAuthStore();
 
-  const saveCredentialsAndRedirect = (
-    user: IUser,
-    accessToken: string,
-    refreshToken: string
-  ) => {
+  const saveCredentialsAndRedirect = (user: IUser, accessToken: string) => {
     const redirectPath = cookies.get("redirect_path") || "/";
     setAccessToken(accessToken);
-    setRefreshToken(refreshToken);
     setLoggedIn(true);
     setUser(user);
     navigate(redirectPath as string);
   };
 
-  const verifyAccountMutation = useMutation({
-    mutationFn: (params: { email: string; signature: string }) => {
-      return rawAxios.post<
-        IResponseData<{ user: IUser; credentials: Credentials }>
-      >(`/api/v1/auth/verify-account`, {
-        email: params.email,
-        signature: params.signature,
-      });
-    },
-    onError: onError,
-    onSuccess: (res) => {
-      toast.success(res.data.message || "Verified successfully");
-      const data = res.data?.data;
-      const user = data?.user;
-      const accessToken = data?.credentials?.access_token;
-      const refreshToken = data?.credentials?.refresh_token;
-      saveCredentialsAndRedirect(user, accessToken, refreshToken);
-    },
-  });
-
-  const signOutMutation = useMutation({
-    mutationFn: () => {
-      return rawAxios.post<IResponseData<unknown>>(`/api/v1/auth/sign-out`, {
-        client: "web",
-      });
-    },
-    onError: onError,
-    onSuccess: (res) => {
-      toast.success(res.data.message || "Signed out successfully");
-      resetAuthStore();
-      resetAppStore();
-    },
-  });
-
   const signInMutation = useMutation({
-    mutationFn: (params: { email: string; password: string }) => {
+    mutationFn: (params: { username: string; password: string }) => {
       return rawAxios.post<
         IResponseData<{ user: IUser; credentials: Credentials }>
       >("/api/v1/auth/authenticate", {
-        email: params.email,
+        username: params.username,
         password: params.password,
       });
     },
@@ -81,30 +34,7 @@ const useAuth = () => {
       const data = res.data?.data;
       const user = data?.user;
       const accessToken = data?.credentials?.access_token;
-      const refreshToken = data?.credentials?.refresh_token;
-      saveCredentialsAndRedirect(user, accessToken, refreshToken);
-    },
-  });
-
-  const signUpMutation = useMutation({
-    mutationFn: (params: {
-      email: string;
-      password: string;
-      firstName: string;
-      lastName: string;
-    }) =>
-      rawAxios.post<IResponseData<{ user: IUser; credentials: Credentials }>>(
-        "/api/v1/auth/register",
-        {
-          email: params.email,
-          password: params.password,
-          firstName: params.firstName,
-          lastName: params.lastName,
-        }
-      ),
-    onError: onError,
-    onSuccess: (res) => {
-      toast.success(res.data.message);
+      saveCredentialsAndRedirect(user, accessToken);
     },
   });
 
@@ -136,48 +66,10 @@ const useAuth = () => {
     },
   });
 
-  const resendVerifyAccountMutation = useMutation({
-    mutationFn: (params: { email: string }) =>
-      rawAxios.post<IResponseData<unknown>>(
-        "/api/v1/auth/verify-account/resend",
-        {
-          email: params.email,
-        }
-      ),
-    onError: onError,
-    onSuccess: (res) => {
-      toast.success(res.data.message);
-    },
-  });
-
-  const signInWithGoogleMutation = useMutation({
-    mutationFn: (params: { access_token: string }) =>
-      rawAxios.post<IResponseData<{ user: IUser; credentials: Credentials }>>(
-        "/api/v1/auth/google",
-        {
-          access_token: params.access_token,
-        }
-      ),
-    onError: onError,
-    onSuccess: (res) => {
-      toast.success(res.data.message);
-      const data = res.data?.data;
-      const user = data?.user;
-      const accessToken = data?.credentials?.access_token;
-      const refreshToken = data?.credentials?.refresh_token;
-      saveCredentialsAndRedirect(user, accessToken, refreshToken);
-    },
-  });
-
   return {
     signInMutation,
-    signUpMutation,
-    signOutMutation,
-    verifyAccountMutation,
     forgotPasswordMutation,
     resetPasswordMutation,
-    resendVerifyAccountMutation,
-    signInWithGoogleMutation,
   };
 };
 

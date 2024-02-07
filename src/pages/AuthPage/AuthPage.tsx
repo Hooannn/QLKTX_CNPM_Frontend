@@ -2,17 +2,13 @@ import { Image } from "@nextui-org/react";
 import { useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import SignInForm from "./SignInForm";
-import SignUpForm from "./SignUpForm";
 import ForgotPasswordForm from "./ForgotPasswordForm";
 import ResetPasswordForm from "./ResetPasswordForm";
-import VerifyAccountForm from "./VerifyAccountForm";
 
 type AuthType =
   | "signIn"
-  | "signUp"
   | "forgotPassword"
-  | "resetPassword"
-  | "verifyAccount";
+  | "resetPassword";
 
 export default function AuthPage() {
   const [authType, setAuthType] = useState<AuthType>("signIn");
@@ -27,14 +23,10 @@ export default function AuthPage() {
     switch (authType) {
       case "signIn":
         return <SignInForm />;
-      case "signUp":
-        return <SignUpForm />;
       case "forgotPassword":
         return <ForgotPasswordForm />;
       case "resetPassword":
         return <ResetPasswordForm />;
-      case "verifyAccount":
-        return <VerifyAccountForm />;
     }
   }, [authType]);
 
@@ -45,11 +37,20 @@ export default function AuthPage() {
           removeWrapper
           className="h-full w-full object-cover"
           alt="Authen image"
-          src="/auth-image.jpg"
+          src="https://live.staticflickr.com/4156/34289960150_ceeaa1fc57_b.jpg"
         />
       </div>
       <div className="w-2/3 p-8 pl-0">
-        <div className="max-w-[700px] mx-auto flex flex-col gap-6">{form}</div>
+        <div className="max-w-[700px] mx-auto flex flex-col gap-6">
+          <div className="mx-auto pb-8">
+            <Image
+              removeWrapper
+              width={100}
+              src="/logo.png"
+            />
+          </div>
+          {form}
+        </div>
       </div>
     </div>
   );

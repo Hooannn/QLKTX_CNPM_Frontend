@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import axios from "axios";
-import useRefreshToken from "./useRefreshToken";
 import useAuthStore from "../stores/auth";
+import { useNavigate } from "react-router-dom";
 
 export const rawAxios = axios.create({
   baseURL: import.meta.env.VITE_API_ENDPOINT,
@@ -20,9 +20,9 @@ export const axiosIns = axios.create({
 });
 
 const useAxiosIns = () => {
-  const { accessToken } = useAuthStore();
+  const { accessToken, reset } = useAuthStore();
+  const navigate = useNavigate();
   const getAccessToken = () => accessToken;
-  const refreshToken = useRefreshToken();
 
   useEffect(() => {
     const requestIntercept = axiosIns.interceptors.request.use(
@@ -41,17 +41,11 @@ const useAxiosIns = () => {
     const responseIntercept = axiosIns.interceptors.response.use(
       (response) => response,
       async (error) => {
-        const prevRequest = error?.config;
-        if (error?.response?.status === 401 && !prevRequest?.sent) {
-          prevRequest.sent = true;
-          const token = await refreshToken();
-          if (!token) throw new Error("REFRESH_FAILED");
-          prevRequest.headers.Authorization = `Bearer ${token}`;
-          return axiosIns({
-            ...prevRequest,
-            headers: prevRequest.headers.toJSON(),
-          });
+        if (error?.response?.status === 401) {
+          reset();
+          navigate("/auth?type=signIn");
         }
+
         return Promise.reject(error);
       }
     );
@@ -60,7 +54,7 @@ const useAxiosIns = () => {
       axios.interceptors.request.eject(requestIntercept);
       axios.interceptors.response.eject(responseIntercept);
     };
-  }, [refreshToken]);
+  }, []);
 
   return axiosIns;
 };

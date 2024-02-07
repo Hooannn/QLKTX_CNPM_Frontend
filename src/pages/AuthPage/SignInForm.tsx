@@ -1,16 +1,12 @@
-import { Input, Button, Link, Image } from "@nextui-org/react";
-import { useGoogleLogin } from "@react-oauth/google";
-import { AxiosError } from "axios";
+import { Input, Button, Link } from "@nextui-org/react";
 import { useState } from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { AiOutlineEyeInvisible, AiOutlineEye } from "react-icons/ai";
 import { useSearchParams } from "react-router-dom";
 import useAuth from "../../services/auth";
-import { IResponseData } from "../../types";
-import toast from "react-hot-toast";
 
 type SignInInputs = {
-  email: string;
+  username: string;
   password: string;
 };
 export default function SignInForm() {
@@ -20,91 +16,58 @@ export default function SignInForm() {
     formState: { errors },
   } = useForm<SignInInputs>();
 
-  const { signInMutation, signInWithGoogleMutation } = useAuth();
+  const { signInMutation } = useAuth();
 
   const onSubmit: SubmitHandler<SignInInputs> = (data) => {
-    signInMutation.mutateAsync(data).catch((err) => {
-      if (
-        (err as AxiosError<IResponseData<unknown>>).response?.data?.message ===
-        "User is disabled"
-      ) {
-        searchParams.set("type", "verifyAccount");
-        searchParams.set("email", btoa(data.email));
-        setSearchParams(searchParams);
-      }
-    });
+    signInMutation.mutateAsync(data)
   };
 
   const [isVisible, setIsVisible] = useState(false);
-
-  const googleLogin = useGoogleLogin({
-    onSuccess: async (tokenResponse) => {
-      signInWithGoogleMutation.mutate(tokenResponse);
-    },
-    onError: (errorResponse) => {
-      toast.error(
-        errorResponse?.error_description ||
-          errorResponse?.error ||
-          "Something went wrong. Please try again"
-      );
-    },
-  });
 
   const toggleVisibility = () => setIsVisible(!isVisible);
   const [searchParams, setSearchParams] = useSearchParams();
   return (
     <>
       <div>
-        <h3 className="font-medium text-3xl">Welcome to Panorama,</h3>
-        <h3 className="font-medium text-3xl">Sign In to Continue.</h3>
+        <h3 className="font-medium text-3xl">Hệ thống quản lý kí túc xá Học viện cơ sở Bưu chính viễn thông - Thành phố Hồ Chí Minh,</h3>
+        <h3 className="font-medium text-3xl">Đăng nhập để tiếp tực.</h3>
       </div>
-      <div>
-        <div className="font-medium">
-          Don't have an account?{" "}
-          <Link
-            className="cursor-pointer"
-            color="foreground"
-            target="_self"
-            underline="always"
-            onClick={() => {
-              searchParams.set("type", "signUp");
-              setSearchParams(searchParams);
-            }}
-          >
-            Create a account
-          </Link>
-        </div>
-        <div className="font-medium">It takes less than a minute</div>
-      </div>
+
       <div className="mt-6 flex flex-col gap-3">
         <Input
-          errorMessage={errors.email?.message}
-          {...register("email", {
-            required: "Email is required",
-            pattern: {
-              value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i,
-              message: "Invalid email address",
-            },
+          errorMessage={errors.username?.message}
+          {...register("username", {
+            required: "Tên đăng nhập là bắt buộc",
           })}
           color="primary"
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              handleSubmit(onSubmit)();
+            }
+          }}
           variant="bordered"
           type="email"
-          label="Email"
-          placeholder="Enter your email"
+          label="Tên đăng nhập"
+          placeholder="Điền tên đăng nhập"
         />
         <Input
           errorMessage={errors.password?.message}
           {...register("password", {
-            required: "Password is required",
+            required: "Mật khẩu là bắt buộc",
             minLength: {
               value: 6,
-              message: "Password must be at least 6 characters long",
+              message: "Mật khẩu phải có ít nhất 6 ký tự",
             },
           })}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              handleSubmit(onSubmit)();
+            }
+          }}
           color="primary"
-          label="Password"
+          label="Mật khẩu"
           variant="bordered"
-          placeholder="Enter your password"
+          placeholder="Nhập mật khẩu"
           endContent={
             <button
               className="focus:outline-none"
@@ -132,31 +95,20 @@ export default function SignInForm() {
             size="sm"
             underline="always"
           >
-            Forgot password?
+            Quên mật khẩu?
           </Link>
         </div>
       </div>
       <div className="flex flex-col gap-2 mt-4">
         <Button
           isLoading={
-            signInMutation.isPending || signInWithGoogleMutation.isPending
+            signInMutation.isLoading
           }
           onClick={handleSubmit(onSubmit)}
           color="primary"
           size="lg"
         >
-          Sign In
-        </Button>
-        <Button
-          isLoading={
-            signInMutation.isPending || signInWithGoogleMutation.isPending
-          }
-          variant="flat"
-          onClick={() => googleLogin()}
-          size="lg"
-        >
-          <Image src="/google_icon.png" width={28} height={28} />
-          Sign In with Google
+          Đăng nhập
         </Button>
       </div>
     </>
