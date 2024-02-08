@@ -10,22 +10,49 @@ import {
   SelectItem,
 } from "@nextui-org/react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useState } from "react";
 import toast from "react-hot-toast";
 import { IResponseData, IUser } from "../../types";
 import { onError } from "../../utils/error-handlers";
 import useAxiosIns from "../../hooks/useAxiosIns";
+import { SubmitHandler, useForm } from "react-hook-form";
+import dayjs from '../../libs/dayjs';
+type CreateUserInputs = {
+  id: string;
+  first_name: string;
+  last_name: string;
+  password: string;
+  email: string;
+  date_of_birth: string;
+  phone: string;
+  address?: string;
+  sex: string;
+  role: string;
+};
 
 export default function CreateUserModal(props: {
   isOpen: boolean;
   onClose: () => void;
 }) {
-  const [name, setName] = useState("");
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<CreateUserInputs>();
+
+
+  const onSubmit: SubmitHandler<CreateUserInputs> = async (data) => {
+    await createUserMutation.mutateAsync(data)
+  };
+
   const axios = useAxiosIns();
   const queryClient = useQueryClient();
 
+  const isValidDate = (dateString: string) => {
+    return dayjs(dateString, "MM/DD/YYYY", true).isValid();
+  };
+
   const createUserMutation = useMutation({
-    mutationFn: (params: { name: string }) =>
+    mutationFn: (params: CreateUserInputs) =>
       axios.post<IResponseData<IUser>>(`/api/v1/users`, params),
     onError,
     onSuccess(data) {
@@ -33,11 +60,6 @@ export default function CreateUserModal(props: {
       queryClient.invalidateQueries(["fetch/users"]);
     },
   });
-
-  const create = async () => {
-    await createUserMutation.mutateAsync({ name });
-    props.onClose();
-  };
 
   return (
     <>
@@ -52,36 +74,46 @@ export default function CreateUserModal(props: {
                 <div className="w-full h-full flex gap-4">
                   <div className="flex flex-col gap-4 w-full">
                     <Input
-                      value={name}
-                      onValueChange={(v) => setName(v)}
+                      errorMessage={errors.id?.message}
+                      {...register("id", {
+                        required: "Mã người dùng là bắt buộc",
+                      })}
                       variant="bordered"
                       size={"md"}
                       label="Mã người dùng"
                     />
                     <Input
-                      value={name}
-                      onValueChange={(v) => setName(v)}
+                      errorMessage={errors.id?.message}
+                      {...register('first_name', {
+                        required: "Tên là bắt buộc",
+                      })}
                       variant="bordered"
                       size={"md"}
                       label="Tên"
                     />
                     <Input
-                      value={name}
-                      onValueChange={(v) => setName(v)}
+                      errorMessage={errors.id?.message}
+                      {...register('last_name', {
+                        required: "Họ là bắt buộc",
+                      })}
                       variant="bordered"
                       size={"md"}
                       label="Họ"
                     />
                     <Input
-                      value={name}
-                      onValueChange={(v) => setName(v)}
+                      errorMessage={errors.id?.message}
+                      {...register('email', {
+                        required: "Email là bắt buộc",
+                      })}
                       variant="bordered"
                       size={"md"}
                       label="Email"
                     />
                     <Input
-                      value={name}
-                      onValueChange={(v) => setName(v)}
+                      errorMessage={errors.id?.message}
+                      {...register('password', {
+                        required: "Mật khẩu là bắt buộc",
+                      })}
                       variant="bordered"
                       size={"md"}
                       type="password"
@@ -90,27 +122,44 @@ export default function CreateUserModal(props: {
                   </div>
                   <div className="flex flex-col gap-4 w-full">
                     <Input
-                      value={name}
-                      onValueChange={(v) => setName(v)}
+                      errorMessage={errors.phone?.message}
+                      {...register("phone", {
+                        required: "Số điện thoại là bắt buộc",
+                        pattern: {
+                          value: /^\d{10}$/,
+                          message: "Số điện thoại không hợp lệ"
+                        }
+                      })}
                       variant="bordered"
                       size={"md"}
-                      label="Số điện thoại (tùy chọn)"
+                      label="Số điện thoại"
                     />
                     <Input
-                      value={name}
-                      onValueChange={(v) => setName(v)}
+                      {...register('address', {
+                        required: false,
+                      })}
                       variant="bordered"
                       size={"md"}
                       label="Địa chỉ (tùy chọn)"
                     />
                     <Input
-                      value={name}
-                      onValueChange={(v) => setName(v)}
+                      errorMessage={errors.date_of_birth?.message}
+                      {...register('date_of_birth', {
+                        validate: {
+                          validDate: value =>
+                            isValidDate(value) || "Ngày sinh phải đúng định dạng (dd/mm/yyyy)"
+                        }
+                      })}
                       variant="bordered"
                       size={"md"}
                       label="Ngày sinh (tùy chọn)"
                     />
-                    <Select variant="bordered" label="Giới tính" size="md">
+                    <Select
+                      errorMessage={errors.sex?.message}
+                      {...register('sex', {
+                        required: "Giới tính là bắt buộc",
+                      })}
+                      variant="bordered" label="Giới tính" size="md">
                       <SelectItem key="MALE" value="MALE">
                         Nam
                       </SelectItem>
@@ -121,7 +170,10 @@ export default function CreateUserModal(props: {
                         Khác
                       </SelectItem>
                     </Select>
-                    <Select variant="bordered" label="Quyền" size="md">
+                    <Select errorMessage={errors.sex?.message}
+                      {...register('role', {
+                        required: "Quyền là bắt buộc",
+                      })} variant="bordered" label="Quyền" size="md">
                       <SelectItem key="STUDENT" value="STUDENT">
                         Sinh viên
                       </SelectItem>
@@ -143,7 +195,7 @@ export default function CreateUserModal(props: {
                 <Button
                   isLoading={createUserMutation.isLoading}
                   color="primary"
-                  onPress={create}
+                  onClick={handleSubmit(onSubmit)}
                 >
                   Tạo
                 </Button>

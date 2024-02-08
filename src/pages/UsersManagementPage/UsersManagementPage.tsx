@@ -10,6 +10,7 @@ import {
   getKeyValue,
   Button,
   useDisclosure,
+  Image,
 } from "@nextui-org/react";
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
@@ -88,12 +89,14 @@ export default function UsersManagementPage() {
           </TableHeader>
           <TableBody
             items={users.slice((page - 1) * 10, page * 10)}
+            emptyContent={
+              <div><Image removeWrapper className="mx-auto" width={250} src="/Empty.svg" />
+                <div><small>Hiện tại không có người dùng nào.</small></div></div>
+            }
             loadingContent={<Spinner />}
             loadingState={
               getUsersQuery.isLoading
                 ? "loading"
-                : getUsersQuery.isError
-                ? "error"
                 : undefined
             }
           >
