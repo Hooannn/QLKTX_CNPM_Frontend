@@ -16,32 +16,33 @@ import { onError } from "../../utils/error-handlers";
 import useAxiosIns from "../../hooks/useAxiosIns";
 import { SubmitHandler, useForm } from "react-hook-form";
 import dayjs from "../../libs/dayjs";
-type CreateUserInputs = {
-  id: string;
+type UpdateUserInputs = {
   first_name: string;
   last_name: string;
   password: string;
-  email: string;
   date_of_birth?: string;
   phone: string;
   address?: string;
   sex: string;
-  role: string;
 };
 
-export default function CreateUserModal(props: {
+export default function UpdateUserModal(props: {
   isOpen: boolean;
   onClose: () => void;
+  user: IUser;
 }) {
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<CreateUserInputs>();
+  } = useForm<UpdateUserInputs>();
 
-  const onSubmit: SubmitHandler<CreateUserInputs> = async (data) => {
+  const onSubmit: SubmitHandler<UpdateUserInputs> = async (data) => {
     if (!data.date_of_birth) delete data.date_of_birth;
     else data.date_of_birth = dayjs(data.date_of_birth).toISOString();
+
+    console.log(data);
+
     await createUserMutation.mutateAsync(data);
     props.onClose();
   };
@@ -55,8 +56,8 @@ export default function CreateUserModal(props: {
   };
 
   const createUserMutation = useMutation({
-    mutationFn: (params: CreateUserInputs) =>
-      axios.post<IResponseData<IUser>>(`/api/v1/users`, params),
+    mutationFn: (params: UpdateUserInputs) =>
+      axios.put<IResponseData<IUser>>(`/api/v1/users/${props.user.id}`, params),
     onError,
     onSuccess(data) {
       toast.success(data.data?.message);
@@ -71,21 +72,20 @@ export default function CreateUserModal(props: {
           {() => (
             <>
               <ModalHeader className="flex flex-col gap-1">
-                Tạo người dùng mới
+                Cập nhật người dùng
               </ModalHeader>
               <ModalBody>
                 <div className="w-full h-full flex gap-4">
                   <div className="flex flex-col gap-4 w-full">
                     <Input
-                      errorMessage={errors.id?.message}
-                      {...register("id", {
-                        required: "Mã người dùng là bắt buộc",
-                      })}
+                      defaultValue={props.user.id}
+                      isDisabled
                       variant="bordered"
                       size={"md"}
                       label="Mã người dùng"
                     />
                     <Input
+                      defaultValue={props.user.first_name}
                       errorMessage={errors.first_name?.message}
                       {...register("first_name", {
                         required: "Tên là bắt buộc",
@@ -95,6 +95,7 @@ export default function CreateUserModal(props: {
                       label="Tên"
                     />
                     <Input
+                      defaultValue={props.user.last_name}
                       errorMessage={errors.last_name?.message}
                       {...register("last_name", {
                         required: "Họ là bắt buộc",
@@ -104,14 +105,8 @@ export default function CreateUserModal(props: {
                       label="Họ"
                     />
                     <Input
-                      errorMessage={errors.email?.message}
-                      {...register("email", {
-                        required: "Email là bắt buộc",
-                        pattern: {
-                          value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i,
-                          message: "Email không hợp lệ",
-                        },
-                      })}
+                      isDisabled
+                      defaultValue={props.user.email}
                       variant="bordered"
                       size={"md"}
                       label="Email"
@@ -119,16 +114,17 @@ export default function CreateUserModal(props: {
                     <Input
                       errorMessage={errors.password?.message}
                       {...register("password", {
-                        required: "Mật khẩu là bắt buộc",
+                        required: false,
                       })}
                       variant="bordered"
                       size={"md"}
                       type="password"
-                      label="Mật khẩu đăng nhập"
+                      label="Cài lại mật khẩu"
                     />
                   </div>
                   <div className="flex flex-col gap-4 w-full">
                     <Input
+                      defaultValue={props.user.phone}
                       errorMessage={errors.phone?.message}
                       {...register("phone", {
                         required: "Số điện thoại là bắt buộc",
@@ -142,6 +138,7 @@ export default function CreateUserModal(props: {
                       label="Số điện thoại"
                     />
                     <Input
+                      defaultValue={props.user.address}
                       {...register("address", {
                         required: false,
                       })}
@@ -150,6 +147,11 @@ export default function CreateUserModal(props: {
                       label="Địa chỉ (tùy chọn)"
                     />
                     <Input
+                      defaultValue={
+                        props.user.date_of_birth
+                          ? dayjs(props.user.date_of_birth).format("MM/DD/YYYY")
+                          : ""
+                      }
                       errorMessage={errors.date_of_birth?.message}
                       {...register("date_of_birth", {
                         validate: {
@@ -167,6 +169,7 @@ export default function CreateUserModal(props: {
                       {...register("sex", {
                         required: "Giới tính là bắt buộc",
                       })}
+                      defaultSelectedKeys={[props.user.sex]}
                       variant="bordered"
                       label="Giới tính"
                       size="md"
@@ -182,10 +185,8 @@ export default function CreateUserModal(props: {
                       </SelectItem>
                     </Select>
                     <Select
-                      errorMessage={errors.role?.message}
-                      {...register("role", {
-                        required: "Quyền là bắt buộc",
-                      })}
+                      isDisabled
+                      defaultSelectedKeys={[props.user.role]}
                       variant="bordered"
                       label="Quyền"
                       size="md"
@@ -213,7 +214,7 @@ export default function CreateUserModal(props: {
                   color="primary"
                   onClick={handleSubmit(onSubmit)}
                 >
-                  Tạo
+                  Cập nhật
                 </Button>
               </ModalFooter>
             </>
