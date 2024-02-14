@@ -13,14 +13,17 @@ import {
   Image,
   Select,
   SelectItem,
+  Input,
 } from "@nextui-org/react";
+import dayjs from "../../libs/dayjs";
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import useAxiosIns from "../../hooks/useAxiosIns";
 import { IResponseData, IUser } from "../../types";
 import CreateUserModal from "./CreateUserModal";
 import UserCellActions from "./UserCellActions";
-
+import { AiOutlineSearch } from "react-icons/ai";
+import { useDebounce } from "@uidotdev/usehooks";
 export default function UsersManagementPage() {
   const [page, setPage] = useState(1);
   const axios = useAxiosIns();
@@ -32,6 +35,26 @@ export default function UsersManagementPage() {
     },
   });
 
+  const [searchKeyword, setSearchKeyword] = useState<string>("");
+
+  const debouncedSearchKeyword = useDebounce(searchKeyword, 500);
+
+  const shouldShowLookupUsers = debouncedSearchKeyword.trim().length > 0;
+
+  const lookupUsersQuery = useQuery({
+    queryKey: ["lookup/users", debouncedSearchKeyword],
+    refetchOnWindowFocus: false,
+    queryFn: () => {
+      if (!shouldShowLookupUsers) return null;
+      return axios.get<IResponseData<IUser[]>>(`/api/v1/users/lookup`, {
+        params: {
+          keyword: debouncedSearchKeyword,
+        },
+      });
+    },
+  });
+
+  const lookupUsers = lookupUsersQuery.data?.data?.data ?? [];
   const users = getUsersQuery.data?.data?.data ?? [];
 
   const {
@@ -43,17 +66,20 @@ export default function UsersManagementPage() {
   const [selectedSex, setSelectedSex] = useState<string>("ALL");
   const [selectedRole, setSelectedRole] = useState<string>("ALL");
 
-  const filterUsers = users
-    .filter((user) => {
-      if (selectedSex !== "ALL") return user.sex === selectedSex;
-      return true;
-    })
-    .filter((user) => {
-      if (selectedRole !== "ALL") return user.role === selectedRole;
-      return true;
-    });
+  const filterUsers = () => {
+    const shouldShowUsers = shouldShowLookupUsers ? lookupUsers : users;
+    return shouldShowUsers
+      .filter((user) => {
+        if (selectedSex !== "ALL") return user.sex === selectedSex;
+        return true;
+      })
+      .filter((user) => {
+        if (selectedRole !== "ALL") return user.role === selectedRole;
+        return true;
+      });
+  };
 
-  const tableItems = filterUsers.slice((page - 1) * 10, page * 10);
+  const tableItems = filterUsers().slice((page - 1) * 10, page * 10);
 
   return (
     <>
@@ -65,11 +91,28 @@ export default function UsersManagementPage() {
         <div className="flex items-center justify-between pb-4">
           <div className="text-lg font-bold">Quản lý người dùng</div>
           <div className="flex gap-4">
+            <div className="w-1/3">
+              <Input
+                value={searchKeyword}
+                onValueChange={(value) => setSearchKeyword(value)}
+                color="primary"
+                variant="bordered"
+                label="Tìm kiếm bằng mã hoặc tên"
+                isClearable
+                size="sm"
+                className="h-12 w-full"
+                placeholder="Nhập từ khóa..."
+                startContent={
+                  <AiOutlineSearch className="text-black/50 mb-0.5 dark:text-white/90 text-slate-400 pointer-events-none flex-shrink-0" />
+                }
+              />
+            </div>
             <Select
               onSelectionChange={(selection) => {
                 const keys = Array.from(selection) as string[];
                 setSelectedSex(keys[0]?.toString());
               }}
+              color="primary"
               className="w-40 h-12"
               size="sm"
               variant="bordered"
@@ -92,6 +135,7 @@ export default function UsersManagementPage() {
             <Select
               defaultSelectedKeys={["ALL"]}
               size="sm"
+              color="primary"
               className="w-40"
               variant="bordered"
               label="Quyền"
@@ -122,7 +166,7 @@ export default function UsersManagementPage() {
 
         <Table
           bottomContent={
-            filterUsers.length > 10 ? (
+            filterUsers().length > 10 ? (
               <div className="flex w-full justify-center">
                 <Pagination
                   isCompact
@@ -130,9 +174,9 @@ export default function UsersManagementPage() {
                   color="primary"
                   page={page}
                   total={
-                    filterUsers.length % 10 === 0
-                      ? filterUsers.length / 10
-                      : filterUsers.length / 10 + 1
+                    filterUsers().length % 10 === 0
+                      ? filterUsers().length / 10
+                      : filterUsers().length / 10 + 1
                   }
                   onChange={(page) => setPage(page)}
                 />
@@ -178,7 +222,15 @@ export default function UsersManagementPage() {
                       <UserCellActions user={item} />
                     ) : (
                       <>
-                        {getKeyValue(item, columnKey) ?? (
+                        {getKeyValue(item, columnKey) ? (
+                          <>
+                            {columnKey === "date_of_birth"
+                              ? dayjs(getKeyValue(item, columnKey)).format(
+                                  "DD/MM/YYYY"
+                                )
+                              : getKeyValue(item, columnKey)}
+                          </>
+                        ) : (
                           <i>
                             <small>Chưa cập nhật</small>
                           </i>

@@ -1,10 +1,14 @@
 import { Sidebar as ProSidebar, Menu, MenuItem } from "react-pro-sidebar";
 import {
   AiOutlineDashboard,
-  AiOutlineCarryOut,
   AiOutlineUsergroupAdd,
   AiOutlineBars,
+  AiOutlineHome,
+  AiOutlineSearch,
 } from "react-icons/ai";
+import { GiBunkBeds } from "react-icons/gi";
+import { CiSquareQuestion } from "react-icons/ci";
+import { LiaFileInvoiceDollarSolid } from "react-icons/lia";
 import { useEffect, useMemo, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import useAuthStore from "../stores/auth";
@@ -30,23 +34,23 @@ export default function Sidebar() {
         return [
           {
             to: "/student",
-            icon: <AiOutlineDashboard size={25} />,
+            icon: <AiOutlineHome size={25} />,
             label: "Thuê phòng",
           },
           {
             to: "/student/rooms",
-            icon: <AiOutlineCarryOut size={25} />,
+            icon: <AiOutlineSearch size={25} />,
             label: "Tra cứu phòng",
           },
           {
             to: "/student/requests",
-            icon: <AiOutlineCarryOut size={25} />,
-            label: "Tra cứu yêu cầu",
+            icon: <CiSquareQuestion size={25} />,
+            label: "Yêu cầu",
           },
           {
             to: "/student/invoices",
-            icon: <AiOutlineCarryOut size={25} />,
-            label: "Tra cứu hoá đơn",
+            icon: <LiaFileInvoiceDollarSolid size={25} />,
+            label: "Hoá đơn",
           },
         ];
       case Role.STAFF:
@@ -58,28 +62,28 @@ export default function Sidebar() {
           },
           {
             to: "/staff/rooms",
-            icon: <AiOutlineDashboard size={25} />,
-            label: "Quản lý phòng",
+            icon: <AiOutlineHome size={25} />,
+            label: "Dãy và phòng",
+          },
+          {
+            to: "/staff/room-types",
+            icon: <GiBunkBeds size={25} />,
+            label: "Loại phòng",
           },
           {
             to: "/staff/invoices",
-            icon: <AiOutlineDashboard size={25} />,
-            label: "Quản lý hoá đơn",
-          },
-          {
-            to: "/staff/regions",
-            icon: <AiOutlineDashboard size={25} />,
-            label: "Quản lý dãy phòng",
+            icon: <LiaFileInvoiceDollarSolid size={25} />,
+            label: "Hoá đơn",
           },
           {
             to: "/staff/requests",
-            icon: <AiOutlineDashboard size={25} />,
-            label: "Duyệt yêu cầu",
+            icon: <CiSquareQuestion size={25} />,
+            label: "Yêu cầu",
           },
           {
             to: "/staff/students",
-            icon: <AiOutlineCarryOut size={25} />,
-            label: "Tra cứu thông tin sinh viên",
+            icon: <AiOutlineSearch size={25} />,
+            label: "Tra cứu sinh viên",
           },
         ];
       default:
