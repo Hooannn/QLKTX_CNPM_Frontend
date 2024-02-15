@@ -1,41 +1,88 @@
-import { Accordion, AccordionItem, Button, Image } from "@nextui-org/react";
-import RoomCard from "./RoomCard";
+import {
+  Accordion,
+  AccordionItem,
+  Button,
+  Image,
+  Spinner,
+  useDisclosure,
+} from "@nextui-org/react";
+import useAxiosIns from "../../hooks/useAxiosIns";
+import { useQuery } from "@tanstack/react-query";
+import { IResponseData, Region } from "../../types";
+import CreateRegionModal from "./CreateRegionModal";
+import RegionCard from "./RegionCard";
 
 export default function StaffRoomsPage() {
-  return <>
-    <div>
-      <div className="flex items-center justify-between pb-4">
-        <div className="text-lg font-bold">Phòng và dãy phòng</div>
-        <div className="flex gap-4">
-          <Button className="h-12" color='primary'>
-            Thêm dãy phòng
-          </Button>
+  const axios = useAxiosIns();
+  const getRegionsQuery = useQuery({
+    queryKey: ["fetch/regions"],
+    refetchOnWindowFocus: false,
+    queryFn: () => {
+      return axios.get<IResponseData<Region[]>>(`/api/v1/regions`);
+    },
+  });
+
+  const regions = getRegionsQuery.data?.data?.data ?? [];
+
+  const {
+    isOpen: isCreateRegionModalOpen,
+    onOpen: onOpenCreateRegionModal,
+    onClose: onCreateRegionModalClose,
+  } = useDisclosure();
+  return (
+    <>
+      <CreateRegionModal
+        isOpen={isCreateRegionModalOpen}
+        onClose={onCreateRegionModalClose}
+      />
+      <div>
+        <div className="flex items-center justify-between pb-4">
+          <div className="text-lg font-bold">Phòng và dãy phòng</div>
+          <div className="flex gap-4">
+            <Button
+              onClick={onOpenCreateRegionModal}
+              className="h-12"
+              color="primary"
+            >
+              Thêm dãy phòng
+            </Button>
+          </div>
+        </div>
+        <div>
+          {getRegionsQuery.isLoading ? (
+            <>
+              <div className="flex items-center justify-center py-20">
+                <Spinner size="lg"></Spinner>
+              </div>
+            </>
+          ) : (
+            <>
+              {regions.length === 0 ? (
+                <div className="flex items-center flex-col justify-center py-20">
+                  <Image width={200} src="/Empty.svg"></Image>
+                  <div className="text-sm py-4">Không có dãy phòng nào</div>
+                </div>
+              ) : (
+                <Accordion
+                  defaultExpandedKeys={"all"}
+                  selectionMode="multiple"
+                  variant="splitted"
+                >
+                  {regions.map((region) => (
+                    <AccordionItem
+                      key={region.id}
+                      aria-label={`Dãy ${region.id}`}
+                      title={`Dãy ${region.id}`}
+                    >
+                      <RegionCard regions={regions} region={region} />
+                    </AccordionItem>
+                  ))}
+                </Accordion>
+              )}
+            </>
+          )}
         </div>
       </div>
-      <div>
-        <Accordion defaultExpandedKeys={'all'} selectionMode="multiple" variant='splitted'>
-          <AccordionItem key="1" aria-label="Dãy A" title="Dãy A">
-            <div className="flex flex-wrap gap-4">
-              {
-                [1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((i) => <RoomCard key={i} />)
-              }
-            </div>
-          </AccordionItem>
-          <AccordionItem key="2" aria-label="Dãy B" title="Dãy B">
-            Hello world
-          </AccordionItem>
-          <AccordionItem key="3" aria-label="Dãy F" title="Dãy F">
-            <div className="flex items-center flex-col gap-2">
-              <Image src="/Empty_Noti.svg" width={150} />
-              <small>Dãy này hiện tại chưa có phòng</small>
-              <div className="flex gap-2">
-                <Button className="w-28" color='primary' variant='flat'>Thêm phòng</Button>
-                <Button className="w-28" color='danger' variant='flat'>Xóa dãy</Button>
-              </div>
-            </div>
-          </AccordionItem>
-        </Accordion>
-      </div>
-    </div>
-  </>
+    </>
+  );
 }

@@ -6,6 +6,8 @@ import {
   AiOutlineHome,
   AiOutlineSearch,
 } from "react-icons/ai";
+import { MdOutlineAttachMoney } from "react-icons/md";
+import { MdOutlineDiscount } from "react-icons/md";
 import { GiBunkBeds } from "react-icons/gi";
 import { CiSquareQuestion } from "react-icons/ci";
 import { LiaFileInvoiceDollarSolid } from "react-icons/lia";
@@ -79,6 +81,16 @@ export default function Sidebar() {
             to: "/staff/requests",
             icon: <CiSquareQuestion size={25} />,
             label: "Yêu cầu",
+          },
+          {
+            to: "/staff/discount",
+            icon: <MdOutlineDiscount size={25} />,
+            label: "Giảm giá",
+          },
+          {
+            to: "/staff/extra-charges",
+            icon: <MdOutlineAttachMoney size={25} />,
+            label: "Phụ thu",
           },
           {
             to: "/staff/students",
