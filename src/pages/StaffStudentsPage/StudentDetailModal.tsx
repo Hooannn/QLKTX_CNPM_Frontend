@@ -1,6 +1,6 @@
 import { AiOutlineClose, AiOutlineMail, AiOutlinePhone, AiOutlineUser } from 'react-icons/ai';
 import { IUser } from '../../types';
-import { Avatar, Button, Card, CardBody, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, Tab, Tabs } from '@nextui-org/react';
+import { Avatar, Button, Modal, ModalBody, ModalContent, ModalHeader, Tab, Tabs } from '@nextui-org/react';
 import dayjs from '../../libs/dayjs'
 import BookingsTab from './BookingsTab';
 import InvoicesTab from './InvoicesTab';
@@ -37,7 +37,7 @@ export default function StudentDetailModal(props: {
                                     </div>
                                 </div>
                                 <div className='w-full h-full'>
-                                    <Tabs color="primary" variant='underlined' size='lg'>
+                                    <Tabs color="primary" variant='underlined'>
                                         <Tab
                                             key="bookings"
                                             title='Phiếu thuê'

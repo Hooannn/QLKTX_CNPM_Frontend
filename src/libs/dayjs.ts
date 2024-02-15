@@ -8,8 +8,5 @@ import customParseFormat from "dayjs/plugin/customParseFormat";
 dayjs.extend(customParseFormat);
 dayjs.extend(relativeTime);
 dayjs.extend(weekday);
-
-export const setLocale = (locale: "vi" | "en" | null) => {
-  return dayjs.locale(locale as string);
-};
+dayjs.locale("vi");
 export default dayjs;
