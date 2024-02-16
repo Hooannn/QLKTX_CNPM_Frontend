@@ -1,5 +1,5 @@
 import { Button, Image, useDisclosure } from "@nextui-org/react";
-import { Region } from "../../types";
+import { Region, Room } from "../../types";
 import RoomCard from "./RoomCard";
 import DeleteRegionModal from "./DeleteRegionModal";
 import CreateRoomModal from "./CreateRoomModal";
@@ -9,10 +9,12 @@ export default function RegionCard({
   isStaff,
   region,
   regions,
+  onRoomClicked,
 }: {
   isStaff: boolean;
   region: Region;
   regions: Region[];
+  onRoomClicked?: (room: Room) => void;
 }) {
   const {
     isOpen: isDeleteRegionModalOpen,
@@ -42,40 +44,49 @@ export default function RegionCard({
         <div className="flex items-center flex-col gap-2">
           <Image src="/Empty_Noti.svg" width={150} />
           <small>Dãy này hiện tại chưa có phòng</small>
-          {isStaff && <div className="flex gap-2">
-            <Button
-              onClick={onOpenCreateRoomModal}
-              className="w-28"
-              color="primary"
-              variant="flat"
-            >
-              Thêm phòng
-            </Button>
-            <Button
-              onClick={onOpenDeleteRegionModal}
-              className="w-28"
-              color="danger"
-              variant="flat"
-            >
-              Xóa dãy
-            </Button>
-          </div>}
+          {isStaff && (
+            <div className="flex gap-2">
+              <Button
+                onClick={onOpenCreateRoomModal}
+                className="w-28"
+                color="primary"
+                variant="flat"
+              >
+                Thêm phòng
+              </Button>
+              <Button
+                onClick={onOpenDeleteRegionModal}
+                className="w-28"
+                color="danger"
+                variant="flat"
+              >
+                Xóa dãy
+              </Button>
+            </div>
+          )}
         </div>
       ) : (
         <div className="flex flex-wrap gap-4 px-1">
           {region.rooms.map((room) => (
-            <RoomCard key={room.id} room={room} isStaff={isStaff} />
+            <RoomCard
+              onRoomClicked={onRoomClicked}
+              key={room.id}
+              room={room}
+              isStaff={isStaff}
+            />
           ))}
 
-          {isStaff && <Button
-            onClick={onOpenCreateRoomModal}
-            className="h-36 w-36"
-            color="primary"
-            variant="flat"
-          >
-            <AiOutlinePlus />
-            Thêm phòng
-          </Button>}
+          {isStaff && (
+            <Button
+              onClick={onOpenCreateRoomModal}
+              className="h-36 w-36"
+              color="primary"
+              variant="flat"
+            >
+              <AiOutlinePlus />
+              Thêm phòng
+            </Button>
+          )}
         </div>
       )}
     </>

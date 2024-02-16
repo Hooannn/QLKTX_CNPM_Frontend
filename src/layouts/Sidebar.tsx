@@ -88,11 +88,6 @@ export default function Sidebar() {
             label: "Giảm giá",
           },
           {
-            to: "/staff/extra-charges",
-            icon: <MdOutlineAttachMoney size={25} />,
-            label: "Phụ thu",
-          },
-          {
             to: "/staff/students",
             icon: <AiOutlineSearch size={25} />,
             label: "Tra cứu sinh viên",

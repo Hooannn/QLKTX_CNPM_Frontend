@@ -2,18 +2,17 @@ import { Card, CardBody } from "@nextui-org/card";
 import { Room } from "../../types";
 import RoomDetailModal from "./RoomDetailModal";
 import { useDisclosure } from "@nextui-org/react";
+import { SEX_MAP, STATUS_MAP } from "../../utils/map";
 
-const SEX_MAP = {
-  MALE: "Nam",
-  FEMALE: "Nữ",
-  OTHER: "Khác",
-};
-const STATUS_MAP = {
-  AVAILABLE: "Bình thường",
-  UNAVAILABLE: "Đầy",
-  MAINTAINING: "Bảo trì",
-};
-export default function RoomCard({ room, isStaff }: { isStaff: boolean, room: Room }) {
+export default function RoomCard({
+  onRoomClicked,
+  room,
+  isStaff,
+}: {
+  onRoomClicked?: (room: Room) => void;
+  isStaff: boolean;
+  room: Room;
+}) {
   const {
     isOpen: isDetailModalOpen,
     onOpen: onOpenDetailModal,
@@ -29,7 +28,9 @@ export default function RoomCard({ room, isStaff }: { isStaff: boolean, room: Ro
       />
       <Card
         isPressable
-        onPress={onOpenDetailModal}
+        onPress={() => {
+          onRoomClicked ? onRoomClicked(room) : onOpenDetailModal();
+        }}
         shadow="none"
         radius="sm"
         className="h-36 w-40 border-2"
