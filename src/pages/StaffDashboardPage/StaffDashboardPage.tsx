@@ -7,7 +7,7 @@ import { AiOutlineHome, AiOutlineUserSwitch } from "react-icons/ai";
 import { GiBunkBeds } from "react-icons/gi";
 import { CiSquareQuestion } from "react-icons/ci";
 import { LiaFileInvoiceDollarSolid } from "react-icons/lia";
-export default function StudentDashboardPage() {
+export default function StaffDashboardPage() {
   const { user } = useAuthStore()
   const navigate = useNavigate()
   return <div className="flex flex-col gap-4 h-full">

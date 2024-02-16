@@ -6,9 +6,11 @@ import CreateRoomModal from "./CreateRoomModal";
 import { AiOutlinePlus } from "react-icons/ai";
 
 export default function RegionCard({
+  isStaff,
   region,
   regions,
 }: {
+  isStaff: boolean;
   region: Region;
   regions: Region[];
 }) {
@@ -40,7 +42,7 @@ export default function RegionCard({
         <div className="flex items-center flex-col gap-2">
           <Image src="/Empty_Noti.svg" width={150} />
           <small>Dãy này hiện tại chưa có phòng</small>
-          <div className="flex gap-2">
+          {isStaff && <div className="flex gap-2">
             <Button
               onClick={onOpenCreateRoomModal}
               className="w-28"
@@ -57,15 +59,15 @@ export default function RegionCard({
             >
               Xóa dãy
             </Button>
-          </div>
+          </div>}
         </div>
       ) : (
         <div className="flex flex-wrap gap-4 px-1">
           {region.rooms.map((room) => (
-            <RoomCard key={room.id} room={room} />
+            <RoomCard key={room.id} room={room} isStaff={isStaff} />
           ))}
 
-          <Button
+          {isStaff && <Button
             onClick={onOpenCreateRoomModal}
             className="h-36 w-36"
             color="primary"
@@ -73,7 +75,7 @@ export default function RegionCard({
           >
             <AiOutlinePlus />
             Thêm phòng
-          </Button>
+          </Button>}
         </div>
       )}
     </>

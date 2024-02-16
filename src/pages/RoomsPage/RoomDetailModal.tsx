@@ -9,6 +9,7 @@ import {
 } from "@nextui-org/react";
 export default function RoomDetailModal(props: {
   isOpen: boolean;
+  isStaff: boolean;
   onClose: () => void;
   room: Room;
 }) {
@@ -29,7 +30,9 @@ export default function RoomDetailModal(props: {
                 </Button>
                 Thông tin chi tiết
               </ModalHeader>
-              <ModalBody className="flex-row"></ModalBody>
+              <ModalBody className="flex-row">
+
+              </ModalBody>
             </>
           )}
         </ModalContent>

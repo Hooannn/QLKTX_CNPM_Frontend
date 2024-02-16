@@ -13,7 +13,7 @@ const STATUS_MAP = {
   UNAVAILABLE: "Đầy",
   MAINTAINING: "Bảo trì",
 };
-export default function RoomCard({ room }: { room: Room }) {
+export default function RoomCard({ room, isStaff }: { isStaff: boolean, room: Room }) {
   const {
     isOpen: isDetailModalOpen,
     onOpen: onOpenDetailModal,
@@ -23,6 +23,7 @@ export default function RoomCard({ room }: { room: Room }) {
     <>
       <RoomDetailModal
         room={room}
+        isStaff={isStaff}
         isOpen={isDetailModalOpen}
         onClose={onDetailModalClose}
       />

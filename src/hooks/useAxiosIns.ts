@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import axios from "axios";
 import useAuthStore from "../stores/auth";
 import { useNavigate } from "react-router-dom";
+import toast from "react-hot-toast";
 
 export const rawAxios = axios.create({
   baseURL: import.meta.env.VITE_API_ENDPOINT,
@@ -43,6 +44,7 @@ const useAxiosIns = () => {
       async (error) => {
         if (error?.response?.status === 401) {
           reset();
+          toast.error("Phiên đăng nhập hết hạn, vui lòng đăng nhập lại");
           navigate("/auth?type=signIn");
         }
 

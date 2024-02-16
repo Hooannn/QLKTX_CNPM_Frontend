@@ -4,12 +4,11 @@ import DashboardPage from "../pages/DashboardPage";
 import ErrorPage from "../pages/ErrorPage";
 import MainLayout from "../layouts/MainLayout";
 import UsersManagementPage from "../pages/UsersManagementPage";
-import StudentDashboardPage from "../pages/StaffDashboardPage/StaffDashboardPage";
+import StudentDashboardPage from "../pages/StudentDashboardPage";
 import StaffDashboardPage from "../pages/StaffDashboardPage";
-import StudentRoomsPage from "../pages/StudentRoomsPage";
 import StudentRequestsPage from "../pages/StudentRequestsPage";
 import StudentInvoicesPage from "../pages/StudentInvoicesPage";
-import StaffRoomsPage from "../pages/StaffRoomsPage";
+import RoomsPage from "../pages/RoomsPage";
 import StaffRoomTypesPage from "../pages/StaffRoomTypesPage";
 import StaffInvoicesPage from "../pages/StaffInvoicesPage";
 import StaffRequestsPage from "../pages/StaffRequestsPage";
@@ -41,7 +40,7 @@ const rootRouter = [
       },
       {
         path: "/student/rooms",
-        element: <StudentRoomsPage />,
+        element: <RoomsPage />,
       },
       {
         path: "/student/requests",
@@ -57,7 +56,7 @@ const rootRouter = [
       },
       {
         path: "/staff/rooms",
-        element: <StaffRoomsPage />,
+        element: <RoomsPage />,
       },
       {
         path: "/staff/room-types",

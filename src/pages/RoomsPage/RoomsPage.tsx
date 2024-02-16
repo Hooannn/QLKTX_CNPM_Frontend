@@ -8,11 +8,14 @@ import {
 } from "@nextui-org/react";
 import useAxiosIns from "../../hooks/useAxiosIns";
 import { useQuery } from "@tanstack/react-query";
-import { IResponseData, Region } from "../../types";
+import { IResponseData, Region, Role } from "../../types";
 import CreateRegionModal from "./CreateRegionModal";
 import RegionCard from "./RegionCard";
+import useAuthStore from "../../stores/auth";
 
-export default function StaffRoomsPage() {
+export default function RoomsPage() {
+  const { user } = useAuthStore();
+  const isStaff = user?.role === Role.STAFF
   const axios = useAxiosIns();
   const getRegionsQuery = useQuery({
     queryKey: ["fetch/regions"],
@@ -38,7 +41,7 @@ export default function StaffRoomsPage() {
       <div>
         <div className="flex items-center justify-between pb-4">
           <div className="text-lg font-bold">Phòng và dãy phòng</div>
-          <div className="flex gap-4">
+          {isStaff && <div className="flex gap-4">
             <Button
               onClick={onOpenCreateRegionModal}
               className="h-12"
@@ -46,7 +49,7 @@ export default function StaffRoomsPage() {
             >
               Thêm dãy phòng
             </Button>
-          </div>
+          </div>}
         </div>
         <div>
           {getRegionsQuery.isLoading ? (
@@ -74,7 +77,7 @@ export default function StaffRoomsPage() {
                       aria-label={`Dãy ${region.id}`}
                       title={`Dãy ${region.id}`}
                     >
-                      <RegionCard regions={regions} region={region} />
+                      <RegionCard isStaff={isStaff} regions={regions} region={region} />
                     </AccordionItem>
                   ))}
                 </Accordion>
