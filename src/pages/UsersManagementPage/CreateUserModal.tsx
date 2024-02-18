@@ -158,6 +158,7 @@ export default function CreateUserModal(props: {
                             "Ngày sinh phải đúng định dạng (mm/dd/yyyy)",
                         },
                       })}
+                      placeholder="mm/dd/yyyy"
                       variant="bordered"
                       size={"md"}
                       label="Ngày sinh (tùy chọn)"

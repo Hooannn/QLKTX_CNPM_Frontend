@@ -5,8 +5,8 @@ import {
   AiOutlineBars,
   AiOutlineHome,
   AiOutlineSearch,
+  AiOutlineClockCircle,
 } from "react-icons/ai";
-import { MdOutlineAttachMoney } from "react-icons/md";
 import { MdOutlineDiscount } from "react-icons/md";
 import { GiBunkBeds } from "react-icons/gi";
 import { CiSquareQuestion } from "react-icons/ci";
@@ -71,6 +71,11 @@ export default function Sidebar() {
             to: "/staff/room-types",
             icon: <GiBunkBeds size={25} />,
             label: "Loại phòng",
+          },
+          {
+            to: "/staff/booking-time",
+            icon: <AiOutlineClockCircle size={25} />,
+            label: "Thời gian thuê",
           },
           {
             to: "/staff/invoices",
