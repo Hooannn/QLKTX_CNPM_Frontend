@@ -16,6 +16,8 @@ import { useLocation, useNavigate } from "react-router-dom";
 import useAuthStore from "../stores/auth";
 import { Button, Image } from "@nextui-org/react";
 import { Role } from "../types";
+import { GrDocumentUser } from "react-icons/gr";
+
 export default function Sidebar() {
   const location = useLocation();
   const [collapsed, setCollapsed] = useState(false);
@@ -76,6 +78,11 @@ export default function Sidebar() {
             to: "/staff/booking-time",
             icon: <AiOutlineClockCircle size={25} />,
             label: "Thời gian thuê",
+          },
+          {
+            to: "/staff/bookings",
+            icon: <GrDocumentUser size={25} />,
+            label: "Phiếu thuê",
           },
           {
             to: "/staff/invoices",

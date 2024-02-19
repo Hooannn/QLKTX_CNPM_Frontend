@@ -108,6 +108,7 @@ export default function UsersManagementPage() {
               />
             </div>
             <Select
+              disallowEmptySelection
               onSelectionChange={(selection) => {
                 const keys = Array.from(selection) as string[];
                 setSelectedSex(keys[0]?.toString());
@@ -133,6 +134,7 @@ export default function UsersManagementPage() {
               </SelectItem>
             </Select>
             <Select
+              disallowEmptySelection
               defaultSelectedKeys={["ALL"]}
               size="sm"
               color="primary"

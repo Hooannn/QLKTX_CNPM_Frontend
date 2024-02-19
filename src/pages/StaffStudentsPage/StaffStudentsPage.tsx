@@ -8,7 +8,6 @@ import {
   TableRow,
   TableCell,
   getKeyValue,
-  Button,
   Image,
   Select,
   SelectItem,
@@ -59,11 +58,10 @@ export default function StaffStudentsPage() {
 
   const filterUsers = () => {
     const shouldShowUsers = shouldShowLookupUsers ? lookupUsers : users;
-    return shouldShowUsers
-      .filter((user) => {
-        if (selectedSex !== "ALL") return user.sex === selectedSex;
-        return true;
-      })
+    return shouldShowUsers.filter((user) => {
+      if (selectedSex !== "ALL") return user.sex === selectedSex;
+      return true;
+    });
   };
 
   const tableItems = filterUsers().slice((page - 1) * 10, page * 10);
@@ -91,6 +89,7 @@ export default function StaffStudentsPage() {
               />
             </div>
             <Select
+              disallowEmptySelection
               onSelectionChange={(selection) => {
                 const keys = Array.from(selection) as string[];
                 setSelectedSex(keys[0]?.toString());
@@ -179,8 +178,8 @@ export default function StaffStudentsPage() {
                           <>
                             {columnKey === "date_of_birth"
                               ? dayjs(getKeyValue(item, columnKey)).format(
-                                "DD/MM/YYYY"
-                              )
+                                  "DD/MM/YYYY"
+                                )
                               : getKeyValue(item, columnKey)}
                           </>
                         ) : (

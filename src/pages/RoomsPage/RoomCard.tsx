@@ -3,7 +3,7 @@ import { Room } from "../../types";
 import RoomDetailModal from "./RoomDetailModal";
 import { useDisclosure } from "@nextui-org/react";
 import { SEX_MAP, STATUS_MAP } from "../../utils/map";
-
+import { priceFormat } from "../../utils/priceFormat";
 export default function RoomCard({
   onRoomClicked,
   room,
@@ -44,7 +44,7 @@ export default function RoomCard({
             </div>
             <div className="flex items-center justify-between text-xs">
               <div>Đơn giá</div>
-              <div className="text-right">{room.type.price}</div>
+              <div className="text-right">{priceFormat(room.type.price)}</div>
             </div>
             <div className="flex items-center justify-between text-xs">
               <div>Số giường</div>

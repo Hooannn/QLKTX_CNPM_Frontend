@@ -24,6 +24,7 @@ import CreateRoomTypeModal from "./CreateRoomTypeModal";
 import RoomTypeCellActions from "./RoomTypeCellActions";
 import { AiOutlineSearch } from "react-icons/ai";
 import { useDebounce } from "@uidotdev/usehooks";
+import { priceFormat } from "../../utils/priceFormat";
 export default function StaffRoomTypesPage() {
   const [page, setPage] = useState(1);
   const axios = useAxiosIns();
@@ -104,6 +105,7 @@ export default function StaffRoomTypesPage() {
               />
             </div>
             <Select
+              disallowEmptySelection
               onSelectionChange={(selection) => {
                 const keys = Array.from(selection) as string[];
                 setSelectedSex(keys[0]?.toString());
@@ -188,22 +190,28 @@ export default function StaffRoomTypesPage() {
               <TableRow key={item?.id}>
                 {(columnKey) => (
                   <TableCell>
+                    {columnKey === "price" &&
+                      priceFormat(getKeyValue(item, columnKey))}
                     {columnKey === "actions" ? (
                       <RoomTypeCellActions roomType={item} />
                     ) : (
                       <>
-                        {getKeyValue(item, columnKey) ? (
+                        {columnKey !== "price" && (
                           <>
-                            {columnKey === "date_of_birth"
-                              ? dayjs(getKeyValue(item, columnKey)).format(
-                                  "DD/MM/YYYY"
-                                )
-                              : getKeyValue(item, columnKey)}
+                            {getKeyValue(item, columnKey) ? (
+                              <>
+                                {columnKey === "date_of_birth"
+                                  ? dayjs(getKeyValue(item, columnKey)).format(
+                                      "DD/MM/YYYY"
+                                    )
+                                  : getKeyValue(item, columnKey)}
+                              </>
+                            ) : (
+                              <i>
+                                <small>Chưa cập nhật</small>
+                              </i>
+                            )}
                           </>
-                        ) : (
-                          <i>
-                            <small>Chưa cập nhật</small>
-                          </i>
                         )}
                       </>
                     )}
