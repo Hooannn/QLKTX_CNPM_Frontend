@@ -39,14 +39,12 @@ export default function ResetPasswordForm() {
   return (
     <>
       <div>
-        <h3 className="font-medium text-3xl">Reset password,</h3>
-        <h3 className="font-medium text-3xl">
-          Submit your new passwords to continue.
-        </h3>
+        <h3 className="font-medium text-3xl">Đặt lại mật khẩu,</h3>
+        <h3 className="font-medium text-3xl">Nhập mật khẩu mới để tiếp tục.</h3>
       </div>
       <div>
         <div className="font-medium">
-          Already done?{" "}
+          Đã xong?{" "}
           <Link
             className="cursor-pointer"
             color="foreground"
@@ -57,7 +55,7 @@ export default function ResetPasswordForm() {
               setSearchParams(searchParams);
             }}
           >
-            Back to Sign In
+            Quay lại đăng nhập
           </Link>
         </div>
       </div>
@@ -65,16 +63,16 @@ export default function ResetPasswordForm() {
         <Input
           errorMessage={errors.password?.message}
           {...register("password", {
-            required: "Password is required",
+            required: "Mật khẩu không được để trống",
             minLength: {
               value: 6,
-              message: "Password must be at least 6 characters long",
+              message: "Mật khẩu phải có ít nhất 6 ký tự",
             },
           })}
           color="primary"
-          label="Password"
+          label="Mật khẩu"
           variant="bordered"
-          placeholder="Enter your new password"
+          placeholder="Nhập mật khẩu của bạn"
           endContent={
             <button
               className="focus:outline-none"
@@ -94,14 +92,14 @@ export default function ResetPasswordForm() {
         <Input
           errorMessage={errors.confirmPassword?.message}
           {...register("confirmPassword", {
-            required: "Confirm password is required",
+            required: "Mật khẩu không được để trống",
             validate: (value) =>
-              value === watchPassword || "Passwords do not match",
+              value === watchPassword || "Mật khẩu không khớp",
           })}
           color="primary"
-          label="Confirm password"
+          label="Nhập lại mật khẩu"
           variant="bordered"
-          placeholder="Enter your password again"
+          placeholder="Nhập lại mật khẩu của bạn"
           endContent={
             <button
               className="focus:outline-none"
@@ -117,17 +115,6 @@ export default function ResetPasswordForm() {
           }
           type={isVisible2 ? "text" : "password"}
         />
-
-        <Input
-          errorMessage={errors.code?.message}
-          {...register("code", {
-            required: "Code is required",
-          })}
-          color="primary"
-          variant="bordered"
-          label="Signature code"
-          placeholder="Enter your signature code from your email"
-        />
       </div>
       <div className="flex flex-col gap-2 mt-4">
         <Button
@@ -136,7 +123,7 @@ export default function ResetPasswordForm() {
           color="primary"
           size="lg"
         >
-          Submit
+          Đặt lại mật khẩu
         </Button>
       </div>
     </>

@@ -28,26 +28,26 @@ export default function ForgotPasswordForm() {
   return (
     <>
       <div>
-        <h3 className="font-medium text-3xl">Forgot password,</h3>
-        <h3 className="font-medium text-3xl">Submit your email to continue.</h3>
+        <h3 className="font-medium text-3xl">Quên mật khẩu,</h3>
+        <h3 className="font-medium text-3xl">
+          Điền email của bạn để tiếp tục.
+        </h3>
       </div>
       <div>
         <div className="font-medium">
-          Don't have an account?{" "}
           <Link
             className="cursor-pointer"
             color="foreground"
             target="_self"
             underline="always"
             onClick={() => {
-              searchParams.set("type", "signUp");
+              searchParams.set("type", "signIn");
               setSearchParams(searchParams);
             }}
           >
-            Create a account
+            Quay lại đăng nhập
           </Link>
         </div>
-        <div className="font-medium">It takes less than a minute</div>
       </div>
       <div className="mt-6 flex flex-col gap-3">
         <Input
@@ -56,17 +56,17 @@ export default function ForgotPasswordForm() {
           }
           errorMessage={errors.email?.message}
           {...register("email", {
-            required: "Email is required",
+            required: "Email không được để trống",
             pattern: {
               value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i,
-              message: "Invalid email address",
+              message: "Email không hợp lệ",
             },
           })}
           color="primary"
           variant="bordered"
           type="email"
           label="Email"
-          placeholder="Enter your email"
+          placeholder="Nhập email của bạn"
         />
       </div>
       <div className="flex flex-col gap-2 mt-4">
@@ -76,7 +76,7 @@ export default function ForgotPasswordForm() {
           color="primary"
           size="lg"
         >
-          Submit
+          Gửi yêu cầu
         </Button>
       </div>
     </>
