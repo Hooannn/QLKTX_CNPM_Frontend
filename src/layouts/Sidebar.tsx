@@ -9,7 +9,6 @@ import {
 } from "react-icons/ai";
 import { MdOutlineDiscount } from "react-icons/md";
 import { GiBunkBeds } from "react-icons/gi";
-import { CiSquareQuestion } from "react-icons/ci";
 import { LiaFileInvoiceDollarSolid } from "react-icons/lia";
 import { useEffect, useMemo, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -45,11 +44,6 @@ export default function Sidebar() {
             to: "/student/rooms",
             icon: <AiOutlineSearch size={25} />,
             label: "Tra cứu phòng",
-          },
-          {
-            to: "/student/requests",
-            icon: <CiSquareQuestion size={25} />,
-            label: "Yêu cầu",
           },
           {
             to: "/student/invoices",
@@ -88,11 +82,6 @@ export default function Sidebar() {
             to: "/staff/invoices",
             icon: <LiaFileInvoiceDollarSolid size={25} />,
             label: "Hoá đơn",
-          },
-          {
-            to: "/staff/requests",
-            icon: <CiSquareQuestion size={25} />,
-            label: "Yêu cầu",
           },
           {
             to: "/staff/discount",
