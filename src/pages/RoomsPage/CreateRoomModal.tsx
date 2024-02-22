@@ -141,7 +141,7 @@ export default function CreateRoomModal(props: {
                           >
                             {props.regions.map((region) => (
                               <SelectItem key={region.id} value={region.id}>
-                                {`${region.id}`}
+                                {`${region.name}`}
                               </SelectItem>
                             ))}
                           </Select>

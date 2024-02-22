@@ -16,33 +16,36 @@ import { onError } from "../../utils/error-handlers";
 import useAxiosIns from "../../hooks/useAxiosIns";
 import { SubmitHandler, useForm } from "react-hook-form";
 
-type CreateRegionInputs = {
-  id: string;
+type UpdateInputs = {
   name: string;
   sex: string;
 };
 
-export default function CreateRegionModal(props: {
+export default function UpdateRegionModal(props: {
   isOpen: boolean;
   onClose: () => void;
+  region: Region;
 }) {
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<CreateRegionInputs>();
+  } = useForm<UpdateInputs>();
 
-  const onSubmit: SubmitHandler<CreateRegionInputs> = async (data) => {
-    await createMutation.mutateAsync(data);
+  const onSubmit: SubmitHandler<UpdateInputs> = async (data) => {
+    await updateMutation.mutateAsync(data);
     props.onClose();
   };
 
   const axios = useAxiosIns();
   const queryClient = useQueryClient();
 
-  const createMutation = useMutation({
-    mutationFn: (params: CreateRegionInputs) =>
-      axios.post<IResponseData<Region>>(`/api/v1/regions`, params),
+  const updateMutation = useMutation({
+    mutationFn: (params: UpdateInputs) =>
+      axios.put<IResponseData<Region>>(
+        `/api/v1/regions/${props.region.id}`,
+        params
+      ),
     onError,
     onSuccess(data) {
       toast.success(data.data?.message);
@@ -57,21 +60,13 @@ export default function CreateRegionModal(props: {
           {() => (
             <>
               <ModalHeader className="flex flex-col gap-1">
-                Tạo dãy phòng
+                Cập nhật dãy phòng
               </ModalHeader>
               <ModalBody>
                 <div className="flex flex-col gap-4 w-full">
                   <Input
-                    errorMessage={errors.id?.message}
-                    {...register("id", {
-                      required: "Mã dãy phòng không được để trống",
-                    })}
-                    variant="bordered"
-                    size={"md"}
-                    label="Mã dãy phòng"
-                  />
-                  <Input
-                    errorMessage={errors.id?.message}
+                    defaultValue={props.region.name}
+                    errorMessage={errors.name?.message}
                     {...register("name", {
                       required: "Tên dãy phòng không được để trống",
                     })}
@@ -81,6 +76,7 @@ export default function CreateRegionModal(props: {
                   />
                   <Select
                     errorMessage={errors.sex?.message}
+                    defaultSelectedKeys={[props.region.sex]}
                     {...register("sex", {
                       required: "Giới tính là bắt buộc",
                     })}
@@ -102,18 +98,18 @@ export default function CreateRegionModal(props: {
               </ModalBody>
               <ModalFooter>
                 <Button
-                  isLoading={createMutation.isLoading}
+                  isLoading={updateMutation.isLoading}
                   variant="light"
                   onPress={props.onClose}
                 >
                   Đóng
                 </Button>
                 <Button
-                  isLoading={createMutation.isLoading}
+                  isLoading={updateMutation.isLoading}
                   color="primary"
                   onClick={handleSubmit(onSubmit)}
                 >
-                  Tạo
+                  Cập nhật
                 </Button>
               </ModalFooter>
             </>

@@ -4,6 +4,8 @@ import RoomCard from "./RoomCard";
 import DeleteRegionModal from "./DeleteRegionModal";
 import CreateRoomModal from "./CreateRoomModal";
 import { AiOutlinePlus } from "react-icons/ai";
+import { IoIosMale, IoIosFemale } from "react-icons/io";
+import UpdateRegionModal from "./UpdateRegionModal";
 
 export default function RegionCard({
   isStaff,
@@ -89,6 +91,50 @@ export default function RegionCard({
           )}
         </div>
       )}
+    </>
+  );
+}
+
+export function RegionCardHeader({ region }: { region: Region }) {
+  const {
+    isOpen: isUpdateModalOpen,
+    onOpen: onOpenUpdateModal,
+    onClose: onUpdateModalClose,
+  } = useDisclosure();
+  return (
+    <>
+      <UpdateRegionModal
+        isOpen={isUpdateModalOpen}
+        onClose={onUpdateModalClose}
+        region={region}
+      />
+      <div className="flex items-center justify-between w-full">
+        <div className="flex items-center gap-2">
+          {region.sex === "MALE" ? (
+            <div className="rounded-full bg-sky-500 p-2 text-white">
+              <IoIosMale size={24} />
+            </div>
+          ) : (
+            <div className="rounded-full bg-pink-300 p-2 text-white">
+              <IoIosFemale size={24} />
+            </div>
+          )}
+          <div>
+            <div className="text-lg font-bold">{region.name}</div>
+            <div className="text-sm opacity-70">
+              {region.rooms.length} phòng
+            </div>
+          </div>
+        </div>
+        <Button
+          onClick={onOpenUpdateModal}
+          size="sm"
+          color="primary"
+          variant="light"
+        >
+          Chỉnh sửa
+        </Button>
+      </div>
     </>
   );
 }

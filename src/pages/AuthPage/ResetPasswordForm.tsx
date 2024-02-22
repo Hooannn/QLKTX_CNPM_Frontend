@@ -4,11 +4,11 @@ import { useForm, SubmitHandler } from "react-hook-form";
 import { AiOutlineEyeInvisible, AiOutlineEye } from "react-icons/ai";
 import { useSearchParams } from "react-router-dom";
 import useAuth from "../../services/auth";
+import toast from "react-hot-toast";
 
 type ResetPasswordInputs = {
   password: string;
   confirmPassword: string;
-  code: string;
 };
 export default function ResetPasswordForm() {
   const {
@@ -20,11 +20,16 @@ export default function ResetPasswordForm() {
   const watchPassword = watch("password", "");
 
   const onSubmit: SubmitHandler<ResetPasswordInputs> = async (data) => {
+    const token = searchParams.get("token");
+    if (!token) {
+      toast.error("Token không hợp lệ");
+      return;
+    }
     await resetPasswordMutation.mutateAsync({
-      email: atob(searchParams.get("email")?.toString() ?? ""),
       newPassword: data.password,
-      signature: data.code,
+      token,
     });
+    searchParams.delete("token");
     searchParams.set("type", "signIn");
     setSearchParams(searchParams);
   };

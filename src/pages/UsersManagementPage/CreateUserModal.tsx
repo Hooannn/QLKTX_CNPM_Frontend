@@ -22,9 +22,9 @@ type CreateUserInputs = {
   last_name: string;
   password: string;
   email: string;
-  date_of_birth?: string;
-  phone: string;
-  address?: string;
+  date_of_birth: string;
+  phone?: string;
+  address: string;
   sex: string;
   role: string;
 };
@@ -40,8 +40,7 @@ export default function CreateUserModal(props: {
   } = useForm<CreateUserInputs>();
 
   const onSubmit: SubmitHandler<CreateUserInputs> = async (data) => {
-    if (!data.date_of_birth) delete data.date_of_birth;
-    else data.date_of_birth = dayjs(data.date_of_birth).toISOString();
+    data.date_of_birth = dayjs(data.date_of_birth).toISOString();
     await createUserMutation.mutateAsync(data);
     props.onClose();
   };
@@ -131,7 +130,7 @@ export default function CreateUserModal(props: {
                     <Input
                       errorMessage={errors.phone?.message}
                       {...register("phone", {
-                        required: "Số điện thoại là bắt buộc",
+                        required: false,
                         pattern: {
                           value: /^\d{10}$/,
                           message: "Số điện thoại không hợp lệ",
@@ -139,19 +138,20 @@ export default function CreateUserModal(props: {
                       })}
                       variant="bordered"
                       size={"md"}
-                      label="Số điện thoại"
+                      label="Số điện thoại (tùy chọn)"
                     />
                     <Input
                       {...register("address", {
-                        required: false,
+                        required: "Địa chỉ là bắt buộc",
                       })}
                       variant="bordered"
                       size={"md"}
-                      label="Địa chỉ (tùy chọn)"
+                      label="Địa chỉ"
                     />
                     <Input
                       errorMessage={errors.date_of_birth?.message}
                       {...register("date_of_birth", {
+                        required: "Ngày sinh là bắt buộc",
                         validate: {
                           validDate: (value) =>
                             isValidDate(value ?? "") ||
@@ -161,7 +161,7 @@ export default function CreateUserModal(props: {
                       placeholder="mm/dd/yyyy"
                       variant="bordered"
                       size={"md"}
-                      label="Ngày sinh (tùy chọn)"
+                      label="Ngày sinh"
                     />
                     <Select
                       errorMessage={errors.sex?.message}

@@ -6,8 +6,6 @@ import {
   ModalFooter,
   Button,
   Input,
-  Select,
-  SelectItem,
 } from "@nextui-org/react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
@@ -19,7 +17,6 @@ import { SubmitHandler, useForm } from "react-hook-form";
 type UpdateRoomTypeInputs = {
   name: string;
   capacity: number;
-  sex: string;
   price: number;
 };
 
@@ -109,26 +106,6 @@ export default function UpdateRoomTypeModal(props: {
                     size={"md"}
                     label="Giá phòng"
                   />
-                  <Select
-                    defaultSelectedKeys={[props.roomType.sex]}
-                    errorMessage={errors.sex?.message}
-                    {...register("sex", {
-                      required: "Giới tính là bắt buộc",
-                    })}
-                    variant="bordered"
-                    label="Giới tính"
-                    size="md"
-                  >
-                    <SelectItem key="MALE" value="MALE">
-                      Nam
-                    </SelectItem>
-                    <SelectItem key="FEMALE" value="FEMALE">
-                      Nữ
-                    </SelectItem>
-                    <SelectItem key="OTHER" value="OTHER">
-                      Khác
-                    </SelectItem>
-                  </Select>
                 </div>
               </ModalBody>
               <ModalFooter>

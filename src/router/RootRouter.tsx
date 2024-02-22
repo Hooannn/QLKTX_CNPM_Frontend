@@ -6,16 +6,15 @@ import MainLayout from "../layouts/MainLayout";
 import UsersManagementPage from "../pages/UsersManagementPage";
 import StudentDashboardPage from "../pages/StudentDashboardPage";
 import StaffDashboardPage from "../pages/StaffDashboardPage";
-import StudentRequestsPage from "../pages/StudentRequestsPage";
 import StudentInvoicesPage from "../pages/StudentInvoicesPage";
 import RoomsPage from "../pages/RoomsPage";
 import StaffRoomTypesPage from "../pages/StaffRoomTypesPage";
 import StaffInvoicesPage from "../pages/StaffInvoicesPage";
-import StaffRequestsPage from "../pages/StaffRequestsPage";
 import StaffStudentsPage from "../pages/StaffStudentsPage";
 import StaffDiscountPage from "../pages/StaffDiscountPage";
 import StaffExtraChargesPage from "../pages/StaffExtraChargesPage";
 import StaffBookingTimePage from "../pages/StaffBookingTimePage";
+import StaffBookingsPage from "../pages/StaffBookingsPage";
 const rootRouter = [
   {
     path: "/",
@@ -44,10 +43,6 @@ const rootRouter = [
         element: <RoomsPage />,
       },
       {
-        path: "/student/requests",
-        element: <StudentRequestsPage />,
-      },
-      {
         path: "/student/invoices",
         element: <StudentInvoicesPage />,
       },
@@ -68,6 +63,10 @@ const rootRouter = [
         element: <StaffRoomTypesPage />,
       },
       {
+        path: "/staff/bookings",
+        element: <StaffBookingsPage />,
+      },
+      {
         path: "/staff/invoices",
         element: <StaffInvoicesPage />,
       },
@@ -78,10 +77,6 @@ const rootRouter = [
       {
         path: "/staff/extra-charges",
         element: <StaffExtraChargesPage />,
-      },
-      {
-        path: "/staff/requests",
-        element: <StaffRequestsPage />,
       },
       {
         path: "/staff/students",

@@ -10,12 +10,12 @@ import useAxiosIns from "../../hooks/useAxiosIns";
 import { useQuery } from "@tanstack/react-query";
 import { IResponseData, Region, Role } from "../../types";
 import CreateRegionModal from "./CreateRegionModal";
-import RegionCard from "./RegionCard";
+import RegionCard, { RegionCardHeader } from "./RegionCard";
 import useAuthStore from "../../stores/auth";
 
 export default function RoomsPage() {
   const { user } = useAuthStore();
-  const isStaff = user?.role === Role.STAFF
+  const isStaff = user?.role === Role.STAFF;
   const axios = useAxiosIns();
   const getRegionsQuery = useQuery({
     queryKey: ["fetch/regions"],
@@ -41,15 +41,17 @@ export default function RoomsPage() {
       <div>
         <div className="flex items-center justify-between pb-4">
           <div className="text-lg font-bold">Phòng và dãy phòng</div>
-          {isStaff && <div className="flex gap-4">
-            <Button
-              onClick={onOpenCreateRegionModal}
-              className="h-12"
-              color="primary"
-            >
-              Thêm dãy phòng
-            </Button>
-          </div>}
+          {isStaff && (
+            <div className="flex gap-4">
+              <Button
+                onClick={onOpenCreateRegionModal}
+                className="h-12"
+                color="primary"
+              >
+                Thêm dãy phòng
+              </Button>
+            </div>
+          )}
         </div>
         <div>
           {getRegionsQuery.isLoading ? (
@@ -74,10 +76,13 @@ export default function RoomsPage() {
                   {regions.map((region) => (
                     <AccordionItem
                       key={region.id}
-                      aria-label={`Dãy ${region.id}`}
-                      title={`Dãy ${region.id}`}
+                      title={<RegionCardHeader region={region} />}
                     >
-                      <RegionCard isStaff={isStaff} regions={regions} region={region} />
+                      <RegionCard
+                        isStaff={isStaff}
+                        regions={regions}
+                        region={region}
+                      />
                     </AccordionItem>
                   ))}
                 </Accordion>

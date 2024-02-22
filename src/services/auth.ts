@@ -50,9 +50,9 @@ const useAuth = () => {
 
   const forgotPasswordMutation = useMutation({
     mutationFn: (params: { email: string }) =>
-      rawAxios.post<IResponseData<unknown>>("/api/v1/auth/forgot-password", {
-        email: params.email,
-      }),
+      rawAxios.post<IResponseData<unknown>>(
+        `/api/v1/auth/forgot-password?email=${params.email}`
+      ),
     onError: onError,
     onSuccess: (res) => {
       toast.success(res.data.message);
@@ -60,16 +60,10 @@ const useAuth = () => {
   });
 
   const resetPasswordMutation = useMutation({
-    mutationFn: (params: {
-      email: string;
-      newPassword: string;
-      signature: string;
-    }) =>
-      rawAxios.post<IResponseData<unknown>>("/api/v1/auth/reset-password", {
-        email: params.email,
-        new_password: params.newPassword,
-        signature: params.signature,
-      }),
+    mutationFn: (params: { token: string; newPassword: string }) =>
+      rawAxios.post<IResponseData<unknown>>(
+        `/api/v1/auth/reset-password?token=${params.token}&newPassword=${params.newPassword}`
+      ),
     onError: onError,
     onSuccess: (res) => {
       toast.success(res.data.message);

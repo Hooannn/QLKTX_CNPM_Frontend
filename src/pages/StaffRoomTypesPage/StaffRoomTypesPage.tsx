@@ -11,8 +11,6 @@ import {
   Button,
   useDisclosure,
   Image,
-  Select,
-  SelectItem,
   Input,
 } from "@nextui-org/react";
 import dayjs from "../../libs/dayjs";
@@ -64,14 +62,11 @@ export default function StaffRoomTypesPage() {
     onClose: onCreateRoomTypeModalClose,
   } = useDisclosure();
 
-  const [selectedSex, setSelectedSex] = useState<string>("ALL");
-
   const filterRoomTypes = () => {
     const shouldShowRoomTypes = shouldShowLookupRoomTypes
       ? lookupRoomTypes
       : roomTypes;
-    return shouldShowRoomTypes.filter((user) => {
-      if (selectedSex !== "ALL") return user.sex === selectedSex;
+    return shouldShowRoomTypes.filter(() => {
       return true;
     });
   };
@@ -104,32 +99,6 @@ export default function StaffRoomTypesPage() {
                 }
               />
             </div>
-            <Select
-              disallowEmptySelection
-              onSelectionChange={(selection) => {
-                const keys = Array.from(selection) as string[];
-                setSelectedSex(keys[0]?.toString());
-              }}
-              color="primary"
-              className="w-40 h-12"
-              size="sm"
-              variant="bordered"
-              defaultSelectedKeys={["ALL"]}
-              label="Giới tính"
-            >
-              <SelectItem key="ALL" value="ALL">
-                Tất cả
-              </SelectItem>
-              <SelectItem key="MALE" value="MALE">
-                Nam
-              </SelectItem>
-              <SelectItem key="FEMALE" value="FEMALE">
-                Nữ
-              </SelectItem>
-              <SelectItem key="OTHER" value="OTHER">
-                Khác
-              </SelectItem>
-            </Select>
             <Button
               onClick={onOpenCreateRoomTypeModal}
               color="primary"
@@ -165,7 +134,6 @@ export default function StaffRoomTypesPage() {
             <TableColumn key="name">Tên</TableColumn>
             <TableColumn key="capacity">Sức chứa</TableColumn>
             <TableColumn key="price">Đơn giá</TableColumn>
-            <TableColumn key="sex">Giới tính</TableColumn>
             <TableColumn key="actions">Thao tác</TableColumn>
           </TableHeader>
           <TableBody

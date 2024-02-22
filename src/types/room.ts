@@ -3,12 +3,13 @@ export interface RoomType {
   name: string;
   capacity: number;
   price: number;
-  sex: "MALE" | "FEMALE" | "OTHER";
 }
 
 export interface Region {
   id: string;
   rooms: Room[];
+  name: string;
+  sex: "MALE" | "FEMALE" | "OTHER";
 }
 
 export interface Room {

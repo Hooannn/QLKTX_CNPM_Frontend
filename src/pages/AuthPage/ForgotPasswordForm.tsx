@@ -19,9 +19,6 @@ export default function ForgotPasswordForm() {
 
   const onSubmit: SubmitHandler<ForgotPasswordInputs> = async (data) => {
     await forgotPasswordMutation.mutateAsync(data);
-    searchParams.set("type", "resetPassword");
-    searchParams.set("email", btoa(data.email));
-    setSearchParams(searchParams);
   };
 
   const [searchParams, setSearchParams] = useSearchParams();
