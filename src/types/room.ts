@@ -1,3 +1,5 @@
+import { Booking } from ".";
+
 export interface RoomType {
   id: number;
   name: string;
@@ -7,8 +9,8 @@ export interface RoomType {
 
 export interface Region {
   id: string;
-  rooms: Room[];
   name: string;
+  rooms: Room[];
   sex: "MALE" | "FEMALE" | "OTHER";
 }
 
@@ -17,6 +19,8 @@ export interface Room {
   region: Region;
   type: RoomType;
   status: RoomStatus;
+  booking_count?: number;
+  bookings?: Booking[];
 }
 
 export enum RoomStatus {

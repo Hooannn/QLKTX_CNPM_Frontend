@@ -5,7 +5,9 @@ import {
   Region,
   Role,
   Room,
-  BookingRequest,
+  Booking,
+  IUser,
+  Discount,
 } from "../../types";
 import {
   Accordion,
@@ -15,6 +17,7 @@ import {
   CardBody,
   CardFooter,
   CardHeader,
+  Checkbox,
   Divider,
   Image,
   Modal,
@@ -30,23 +33,31 @@ import {
 import Stepper from "react-stepper-horizontal";
 import useAuthStore from "../../stores/auth";
 import useAxiosIns from "../../hooks/useAxiosIns";
-import { useMutation, useQuery } from "@tanstack/react-query";
-import RegionCard from "../RoomsPage/RegionCard";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import RegionCard, { RegionCardHeader } from "../../pages/RoomsPage/RegionCard";
 import { useState } from "react";
 import { SEX_MAP } from "../../utils/map";
 import dayjs from "../../libs/dayjs";
 import toast from "react-hot-toast";
 import { priceFormat } from "../../utils/priceFormat";
 import { onError } from "../../utils/error-handlers";
+import StaffStudentsPage from "../../pages/StaffStudentsPage";
 
+type CreateBookingInputs = {
+  booking_time_id: number;
+  room_id: string;
+  student_id: string;
+  discount_id?: string;
+  auto_create_invoice: boolean;
+};
 export default function BookingRequestModal(props: {
   isOpen: boolean;
   onClose: () => void;
   selectedRoom?: Room;
 }) {
   const [selectedRoom, setSelectedRoom] = useState<Room | undefined>();
+  const [selectedStudent, setSelectedStudent] = useState<IUser | undefined>();
   const [selectedTime, setSelectedTime] = useState<BookingTime | undefined>();
-
   const [activeStep, setActiveStep] = useState(0);
 
   const next = () => {
@@ -58,17 +69,16 @@ export default function BookingRequestModal(props: {
   };
 
   const axios = useAxiosIns();
+  const queryClient = useQueryClient();
 
-  const bookingRequestMutation = useMutation({
-    mutationFn: (params: { room_id: string; booking_time_id: number }) => {
-      return axios.post<IResponseData<BookingRequest>>(
-        `/api/v1/booking/request`,
-        params
-      );
+  const createBookingMutation = useMutation({
+    mutationFn: (params: CreateBookingInputs) => {
+      return axios.post<IResponseData<Booking>>(`/api/v1/booking`, params);
     },
     onError,
     onSuccess(data) {
       toast.success(data.data.message);
+      queryClient.invalidateQueries(["fetch/currentBookings"]);
       props.onClose();
     },
   });
@@ -86,12 +96,29 @@ export default function BookingRequestModal(props: {
       ),
     },
     {
-      title: "Điền thông tin",
+      title: "Chọn sinh viên",
       content: (
-        <FormStep
+        <ChooseStudentStep
           selectedRoom={selectedRoom}
           onBack={() => {
             setSelectedRoom(undefined);
+            prev();
+          }}
+          onNext={(student) => {
+            setSelectedStudent(student);
+            next();
+          }}
+        />
+      ),
+    },
+    {
+      title: "Chọn thời gian thuê",
+      content: (
+        <FormStep
+          selectedStudent={selectedStudent}
+          selectedRoom={selectedRoom}
+          onBack={() => {
+            setSelectedStudent(undefined);
             prev();
           }}
           onNext={(time) => {
@@ -105,16 +132,20 @@ export default function BookingRequestModal(props: {
       title: "Xác nhận",
       content: (
         <ConfirmStep
+          selectedStudent={selectedStudent}
           selectedTime={selectedTime}
           selectedRoom={selectedRoom}
           onBack={() => {
             prev();
           }}
-          onNext={() => {
-            if (selectedRoom && selectedTime) {
-              bookingRequestMutation.mutate({
+          onNext={({ discount, autoCreateInvoice }) => {
+            if (selectedRoom && selectedTime && selectedStudent) {
+              createBookingMutation.mutate({
                 room_id: selectedRoom.id,
                 booking_time_id: selectedTime.id,
+                student_id: selectedStudent.id,
+                discount_id: discount?.id ?? undefined,
+                auto_create_invoice: autoCreateInvoice,
               });
             } else {
               toast.error("Có lỗi xảy ra");
@@ -139,7 +170,7 @@ export default function BookingRequestModal(props: {
                 <Button size="lg" onClick={props.onClose} isIconOnly>
                   <AiOutlineClose />
                 </Button>
-                Yêu cầu thuê phòng
+                Tạo phiếu thuê mới
               </ModalHeader>
               <ModalBody className="overflow-auto">
                 <div className="flex flex-col pb-3 gap-3">
@@ -171,10 +202,30 @@ function ChooseRoomStep({
     },
   });
 
+  const getRoomsQuery = useQuery({
+    queryKey: ["fetch/rooms"],
+    refetchOnWindowFocus: false,
+    queryFn: () => {
+      return axios.get<IResponseData<Room[]>>(`/api/v1/rooms`);
+    },
+  });
+
   const regions = getRegionsQuery.data?.data?.data ?? [];
+  const rooms = getRoomsQuery.data?.data?.data ?? [];
+  const isLoading = getRegionsQuery.isLoading || getRoomsQuery.isLoading;
+
+  const getRegionsWithRooms = () => {
+    return regions.map((region) => {
+      const regionRooms = rooms.filter((room) => room.region.id === region.id);
+      return {
+        ...region,
+        rooms: regionRooms,
+      };
+    });
+  };
   return (
-    <div>
-      {getRegionsQuery.isLoading ? (
+    <div className="mx-auto w-full max-w-[1200px]">
+      {isLoading ? (
         <>
           <div className="flex items-center justify-center py-20">
             <Spinner size="lg"></Spinner>
@@ -189,25 +240,23 @@ function ChooseRoomStep({
             </div>
           ) : (
             <>
-              <div className="font-semibold text-lg px-3 pb-3">
-                Chọn phòng bạn muốn thuê
-              </div>
+              <div className="font-semibold text-lg px-3 pb-3">Chọn phòng</div>
               <Accordion
                 defaultExpandedKeys={"all"}
                 selectionMode="multiple"
                 variant="splitted"
               >
-                {regions.map((region) => (
+                {getRegionsWithRooms().map((region) => (
                   <AccordionItem
                     key={region.id}
-                    aria-label={`Dãy ${region.id}`}
-                    title={`Dãy ${region.id}`}
+                    title={<RegionCardHeader isReadonly region={region} />}
                   >
                     <RegionCard
-                      onRoomClicked={onRoomSelected}
+                      isReadOnly
                       isStaff={isStaff}
-                      regions={regions}
+                      regions={getRegionsWithRooms()}
                       region={region}
+                      onRoomClicked={onRoomSelected}
                     />
                   </AccordionItem>
                 ))}
@@ -220,12 +269,59 @@ function ChooseRoomStep({
   );
 }
 
+function ChooseStudentStep({
+  onNext,
+  onBack,
+  selectedRoom,
+}: {
+  selectedRoom?: Room;
+  onNext: (student: IUser) => void;
+  onBack: () => void;
+}) {
+  return (
+    <div className="mx-auto w-full max-w-[1200px]">
+      <div className="flex justify-between items-center w-full">
+        <div>
+          <div>
+            Dãy:{" "}
+            <span className="font-semibold">{selectedRoom?.region.name}</span>
+          </div>
+          <div>
+            Giới tính:{" "}
+            <span className="font-semibold">
+              {SEX_MAP[selectedRoom?.region.sex ?? "OTHER"]}
+            </span>
+          </div>
+          <div>
+            Phòng: <span className="font-semibold">{selectedRoom?.id}</span>
+          </div>
+        </div>
+        <div>
+          <Button color="primary" size="sm" onClick={onBack} variant="flat">
+            Quay lại
+          </Button>
+        </div>
+      </div>
+      <StaffStudentsPage
+        selectable
+        onSelected={(student) => {
+          onNext(student);
+        }}
+        filter={selectedRoom?.region.sex}
+        title="Chọn sinh viên"
+      />
+    </div>
+  );
+}
+
 function FormStep({
   selectedRoom,
+  selectedStudent,
   onBack,
   onNext,
 }: {
   selectedRoom?: Room;
+  selectedStudent?: IUser;
   onBack: () => void;
   onNext: (params: { bookingTime?: BookingTime }) => void;
 }) {
@@ -249,7 +345,7 @@ function FormStep({
 
   const bookingTimes = getBookingTimeQuery.data?.data?.data ?? [];
   return (
-    <Card shadow="sm" radius="sm" className="mx-auto w-full max-w-[500px]">
+    <Card shadow="sm" radius="sm" className="mx-auto w-full max-w-[720px]">
       <CardHeader>
         <div className="flex justify-between items-center w-full">
           <div className="text-lg font-semibold">Điền thông tin</div>
@@ -270,16 +366,23 @@ function FormStep({
             <>
               <CardBody className="gap-4">
                 <div>
-                  <div className="text-base">Thông tin phòng</div>
+                  <div className="text-base">Thông tin dãy</div>
                   <div className="flex items-center justify-between">
-                    <div className="text-sm opacity-80">Phòng</div>{" "}
-                    <div>{selectedRoom?.id}</div>
+                    <div className="text-sm opacity-80">Dãy</div>{" "}
+                    <div>{selectedRoom?.region.name}</div>
                   </div>
                   <div className="flex items-center justify-between">
                     <div className="text-sm opacity-80">Giới tính</div>
                     <div className="text-right">
-                      {SEX_MAP[selectedRoom?.type.sex ?? "OTHER"]}
+                      {SEX_MAP[selectedRoom?.region.sex ?? "OTHER"]}
                     </div>
+                  </div>
+                </div>
+                <div>
+                  <div className="text-base">Thông tin phòng</div>
+                  <div className="flex items-center justify-between">
+                    <div className="text-sm opacity-80">Phòng</div>{" "}
+                    <div>{selectedRoom?.id}</div>
                   </div>
                   <div className="flex items-center justify-between">
                     <div className="text-sm opacity-80">Đơn giá</div>
@@ -293,9 +396,9 @@ function FormStep({
                   </div>
                 </div>
                 <div>
-                  <div className="text-base">Thông tin sinh viên</div>
+                  <div className="text-base">Thông tin quản lý nhận phòng</div>
                   <div className="flex items-center justify-between">
-                    <div className="text-sm opacity-80">Mã sinh viên</div>{" "}
+                    <div className="text-sm opacity-80">Mã quản lý</div>{" "}
                     <div>{user?.id}</div>
                   </div>
                   <div className="flex items-center justify-between">
@@ -308,6 +411,25 @@ function FormStep({
                     <div className="text-sm opacity-80">Giới tính</div>
                     <div className="text-right">
                       {SEX_MAP[user?.sex ?? "OTHER"]}
+                    </div>
+                  </div>
+                </div>
+                <div>
+                  <div className="text-base">Thông tin sinh viên</div>
+                  <div className="flex items-center justify-between">
+                    <div className="text-sm opacity-80">Mã sinh viên</div>{" "}
+                    <div>{selectedStudent?.id}</div>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <div className="text-sm opacity-80">Tên</div>
+                    <div className="text-right">
+                      {selectedStudent?.first_name} {selectedStudent?.last_name}
+                    </div>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <div className="text-sm opacity-80">Giới tính</div>
+                    <div className="text-right">
+                      {SEX_MAP[selectedStudent?.sex ?? "OTHER"]}
                     </div>
                   </div>
                 </div>
@@ -381,25 +503,50 @@ function FormStep({
 function ConfirmStep({
   selectedTime,
   selectedRoom,
+  selectedStudent,
   onBack,
   onNext,
 }: {
   selectedTime?: BookingTime;
   selectedRoom?: Room;
+  selectedStudent?: IUser;
   onBack: () => void;
-  onNext: () => void;
+  onNext: (params: { discount?: Discount; autoCreateInvoice: boolean }) => void;
 }) {
   const { user } = useAuthStore();
   const getTempPrice = () => {
-    const bookingMonths = dayjs(selectedTime?.end_date)
-      .diff(selectedTime?.start_date, "month", true)
-      .toFixed(1);
-    return priceFormat(
-      (selectedRoom?.type.price ?? 0) * parseFloat(bookingMonths)
+    const bookingMonths = dayjs(selectedTime?.end_date).diff(
+      selectedTime?.start_date,
+      "month",
+      true
     );
+    return priceFormat((selectedRoom?.type.price ?? 0) * bookingMonths);
   };
+
+  const discounts = [
+    {
+      id: "GG10",
+      percentage: 10,
+      description: "Giảm 10%",
+      start_date: "2021-01-01",
+      end_date: "2021-12-31",
+    },
+    {
+      id: "GG20",
+      percentage: 20,
+      description: "Giảm 20%",
+      start_date: "2021-01-01",
+      end_date: "2021-12-31",
+    },
+  ];
+
+  const [selectedDiscount, setSelectedDiscount] = useState<
+    Discount | undefined
+  >();
+
+  const [autoCreateInvoice, setAutoCreateInvoice] = useState(true);
   return (
-    <Card shadow="sm" radius="sm" className="mx-auto w-full max-w-[500px]">
+    <Card shadow="sm" radius="sm" className="mx-auto w-full max-w-[720px]">
       <CardHeader>
         <div className="flex justify-between items-center w-full">
           <div className="text-lg font-semibold">Xác nhận</div>
@@ -412,16 +559,23 @@ function ConfirmStep({
       </CardHeader>
       <CardBody className="gap-4">
         <div>
-          <div className="text-base">Thông tin phòng</div>
+          <div className="text-base">Thông tin dãy</div>
           <div className="flex items-center justify-between">
-            <div className="text-sm opacity-80">Phòng</div>{" "}
-            <div>{selectedRoom?.id}</div>
+            <div className="text-sm opacity-80">Dãy</div>{" "}
+            <div>{selectedRoom?.region.name}</div>
           </div>
           <div className="flex items-center justify-between">
             <div className="text-sm opacity-80">Giới tính</div>
             <div className="text-right">
-              {SEX_MAP[selectedRoom?.type.sex ?? "OTHER"]}
+              {SEX_MAP[selectedRoom?.region.sex ?? "OTHER"]}
             </div>
+          </div>
+        </div>
+        <div>
+          <div className="text-base">Thông tin phòng</div>
+          <div className="flex items-center justify-between">
+            <div className="text-sm opacity-80">Phòng</div>{" "}
+            <div>{selectedRoom?.id}</div>
           </div>
           <div className="flex items-center justify-between">
             <div className="text-sm opacity-80">Đơn giá</div>
@@ -435,9 +589,9 @@ function ConfirmStep({
           </div>
         </div>
         <div>
-          <div className="text-base">Thông tin sinh viên</div>
+          <div className="text-base">Thông tin quản lý nhận phòng</div>
           <div className="flex items-center justify-between">
-            <div className="text-sm opacity-80">Mã sinh viên</div>{" "}
+            <div className="text-sm opacity-80">Mã quản lý</div>{" "}
             <div>{user?.id}</div>
           </div>
           <div className="flex items-center justify-between">
@@ -451,6 +605,25 @@ function ConfirmStep({
             <div className="text-right">{SEX_MAP[user?.sex ?? "OTHER"]}</div>
           </div>
         </div>
+        <div>
+          <div className="text-base">Thông tin sinh viên</div>
+          <div className="flex items-center justify-between">
+            <div className="text-sm opacity-80">Mã sinh viên</div>{" "}
+            <div>{selectedStudent?.id}</div>
+          </div>
+          <div className="flex items-center justify-between">
+            <div className="text-sm opacity-80">Tên</div>
+            <div className="text-right">
+              {selectedStudent?.first_name} {selectedStudent?.last_name}
+            </div>
+          </div>
+          <div className="flex items-center justify-between">
+            <div className="text-sm opacity-80">Giới tính</div>
+            <div className="text-right">
+              {SEX_MAP[selectedStudent?.sex ?? "OTHER"]}
+            </div>
+          </div>
+        </div>
         <div className="flex items-center justify-between">
           <div className="text-base">Thời gian thuê</div>
           <div className="text-right flex flex-col">
@@ -462,10 +635,28 @@ function ConfirmStep({
           </div>
         </div>
 
+        <div>
+          <div className="text-base">Áp dụng giảm giá</div>
+          <Select
+            onSelectionChange={(key) => {
+              const keyArray = Array.from(key);
+              const k = keyArray[0];
+              setSelectedDiscount(discounts.find((d) => d.id === k));
+            }}
+            placeholder="Chọn giảm giá (nếu có)"
+            size="sm"
+          >
+            {discounts.map((discount) => (
+              <SelectItem key={discount.id} value={discount.id}>
+                {discount.description}
+              </SelectItem>
+            ))}
+          </Select>
+        </div>
+
         <div className="flex items-center justify-between">
           <div className="text-base flex flex-col">
-            <div>Giá tiền (tạm tính)</div>
-            <small className="text-xs">*Giá tiền thực tế có thể nhỏ hơn</small>
+            <div>Giá tiền</div>
           </div>
           <div className="text-right text-lg font-semibold">
             {getTempPrice()}
@@ -475,15 +666,29 @@ function ConfirmStep({
       <Divider />
       <CardFooter>
         <div className="flex justify-center w-full gap-4 items-center">
-          <small className="w-1/2">
-            *Sau khi xác nhận, yêu cầu của bạn sẽ được gửi đến quản lý phòng,
-            vui lòng chờ phản hồi.
-            <br></br>
-            <strong>
-              Bạn có thể hủy yêu cầu bất cứ lúc nào trước khi được duyệt.
-            </strong>
-          </small>
-          <Button size="lg" color="primary" className="w-1/2" onClick={onNext}>
+          <div className="w-1/2">
+            <Checkbox
+              isSelected={autoCreateInvoice}
+              onValueChange={setAutoCreateInvoice}
+              color="primary"
+              defaultSelected
+            >
+              Tự động tạo hóa đơn
+              <br />
+              <small>Hóa đơn sẽ được tạo tự động khi phiếu thuê được tạo</small>
+            </Checkbox>
+          </div>
+          <Button
+            size="lg"
+            color="primary"
+            className="w-1/2"
+            onClick={() => {
+              onNext({
+                discount: selectedDiscount,
+                autoCreateInvoice,
+              });
+            }}
+          >
             Xác nhận
           </Button>
         </div>

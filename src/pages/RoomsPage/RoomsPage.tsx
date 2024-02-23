@@ -8,7 +8,7 @@ import {
 } from "@nextui-org/react";
 import useAxiosIns from "../../hooks/useAxiosIns";
 import { useQuery } from "@tanstack/react-query";
-import { IResponseData, Region, Role } from "../../types";
+import { IResponseData, Region, Role, Room } from "../../types";
 import CreateRegionModal from "./CreateRegionModal";
 import RegionCard, { RegionCardHeader } from "./RegionCard";
 import useAuthStore from "../../stores/auth";
@@ -25,7 +25,27 @@ export default function RoomsPage() {
     },
   });
 
+  const getRoomsQuery = useQuery({
+    queryKey: ["fetch/rooms"],
+    refetchOnWindowFocus: false,
+    queryFn: () => {
+      return axios.get<IResponseData<Room[]>>(`/api/v1/rooms`);
+    },
+  });
+
   const regions = getRegionsQuery.data?.data?.data ?? [];
+  const rooms = getRoomsQuery.data?.data?.data ?? [];
+  const isLoading = getRegionsQuery.isLoading || getRoomsQuery.isLoading;
+
+  const getRegionsWithRooms = () => {
+    return regions.map((region) => {
+      const regionRooms = rooms.filter((room) => room.region.id === region.id);
+      return {
+        ...region,
+        rooms: regionRooms,
+      };
+    });
+  };
 
   const {
     isOpen: isCreateRegionModalOpen,
@@ -54,7 +74,7 @@ export default function RoomsPage() {
           )}
         </div>
         <div>
-          {getRegionsQuery.isLoading ? (
+          {isLoading ? (
             <>
               <div className="flex items-center justify-center py-20">
                 <Spinner size="lg"></Spinner>
@@ -73,14 +93,14 @@ export default function RoomsPage() {
                   selectionMode="multiple"
                   variant="splitted"
                 >
-                  {regions.map((region) => (
+                  {getRegionsWithRooms().map((region) => (
                     <AccordionItem
                       key={region.id}
                       title={<RegionCardHeader region={region} />}
                     >
                       <RegionCard
                         isStaff={isStaff}
-                        regions={regions}
+                        regions={getRegionsWithRooms()}
                         region={region}
                       />
                     </AccordionItem>

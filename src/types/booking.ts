@@ -15,28 +15,17 @@ export interface Booking {
   booking_time: BookingTime;
   room: Room;
   student: IUser;
-  status: RequestStatus;
-  staff: IUser;
   created_at: string;
   checked_out_at?: string;
+  discount?: Discount;
+  checkin_staff: IUser;
+  checkout_staff?: IUser;
 }
 
-export interface BookingRequest {
-  id: number;
-  booking_time: BookingTime;
-  room: Room;
-  student: IUser;
-  status: RequestStatus;
-  staff: IUser;
-  created_at: string;
-  reject_reason?: string;
-  processed_at?: string;
-  booking?: Booking;
-}
-
-export enum RequestStatus {
-  WAITING = "WAITING",
-  ACCEPTED = "ACCEPTED",
-  REJECTED = "REJECTED",
-  CANCELED = "CANCELED",
+export interface Discount {
+  id: string;
+  percentage: number;
+  description: string;
+  start_date: string;
+  end_date: string;
 }

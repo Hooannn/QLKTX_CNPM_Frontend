@@ -8,11 +8,13 @@ import { IoIosMale, IoIosFemale } from "react-icons/io";
 import UpdateRegionModal from "./UpdateRegionModal";
 
 export default function RegionCard({
+  isReadOnly = false,
   isStaff,
   region,
   regions,
   onRoomClicked,
 }: {
+  isReadOnly?: boolean;
   isStaff: boolean;
   region: Region;
   regions: Region[];
@@ -46,7 +48,7 @@ export default function RegionCard({
         <div className="flex items-center flex-col gap-2">
           <Image src="/Empty_Noti.svg" width={150} />
           <small>Dãy này hiện tại chưa có phòng</small>
-          {isStaff && (
+          {isStaff && !isReadOnly && (
             <div className="flex gap-2">
               <Button
                 onClick={onOpenCreateRoomModal}
@@ -78,10 +80,10 @@ export default function RegionCard({
             />
           ))}
 
-          {isStaff && (
+          {isStaff && !isReadOnly && (
             <Button
               onClick={onOpenCreateRoomModal}
-              className="h-36 w-36"
+              className="h-36 w-40"
               color="primary"
               variant="flat"
             >
@@ -95,7 +97,13 @@ export default function RegionCard({
   );
 }
 
-export function RegionCardHeader({ region }: { region: Region }) {
+export function RegionCardHeader({
+  region,
+  isReadonly = false,
+}: {
+  region: Region;
+  isReadonly?: boolean;
+}) {
   const {
     isOpen: isUpdateModalOpen,
     onOpen: onOpenUpdateModal,
@@ -126,14 +134,16 @@ export function RegionCardHeader({ region }: { region: Region }) {
             </div>
           </div>
         </div>
-        <Button
-          onClick={onOpenUpdateModal}
-          size="sm"
-          color="primary"
-          variant="light"
-        >
-          Chỉnh sửa
-        </Button>
+        {!isReadonly && (
+          <Button
+            onClick={onOpenUpdateModal}
+            size="sm"
+            color="primary"
+            variant="light"
+          >
+            Chỉnh sửa
+          </Button>
+        )}
       </div>
     </>
   );

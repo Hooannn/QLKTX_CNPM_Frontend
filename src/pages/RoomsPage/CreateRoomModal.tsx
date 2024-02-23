@@ -61,7 +61,7 @@ export default function CreateRoomModal(props: {
     onError,
     onSuccess(data) {
       toast.success(data.data?.message);
-      queryClient.invalidateQueries(["fetch/regions"]);
+      queryClient.invalidateQueries(["fetch/rooms"]);
     },
   });
 

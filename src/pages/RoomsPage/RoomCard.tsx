@@ -1,5 +1,5 @@
 import { Card, CardBody } from "@nextui-org/card";
-import { Room } from "../../types";
+import { Room, RoomStatus } from "../../types";
 import RoomDetailModal from "./RoomDetailModal";
 import { useDisclosure } from "@nextui-org/react";
 import { STATUS_MAP } from "../../utils/map";
@@ -18,6 +18,24 @@ export default function RoomCard({
     onOpen: onOpenDetailModal,
     onClose: onDetailModalClose,
   } = useDisclosure();
+
+  const getBackground = () => {
+    if (room.booking_count === 0 && room.status === "AVAILABLE") {
+      return "bg-white";
+    } else if (
+      room.booking_count &&
+      room.booking_count > 0 &&
+      room.booking_count < room.type.capacity &&
+      room.status === "AVAILABLE"
+    ) {
+      return "bg-yellow-50";
+    } else if (
+      room.booking_count === room.type.capacity ||
+      room.status === RoomStatus.MAINTAINING
+    ) {
+      return "bg-red-100";
+    }
+  };
   return (
     <>
       <RoomDetailModal
@@ -33,7 +51,7 @@ export default function RoomCard({
         }}
         shadow="none"
         radius="sm"
-        className="h-36 w-40 border-2"
+        className={`h-36 w-40 ${getBackground()} border-2`}
       >
         <CardBody className="items-center justify-center">
           <div className="font-semibold text-sm pb-3">{room.id}</div>
@@ -48,7 +66,7 @@ export default function RoomCard({
             </div>
             <div className="flex items-center justify-between text-xs">
               <div>Đang thuê</div>
-              <div className="text-right">0</div>
+              <div className="text-right">{room.booking_count ?? 0}</div>
             </div>
             <div className="flex items-center justify-between text-xs">
               <div>Trạng thái</div>

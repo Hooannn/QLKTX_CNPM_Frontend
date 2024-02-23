@@ -12,6 +12,7 @@ import {
   Select,
   SelectItem,
   Input,
+  Button,
 } from "@nextui-org/react";
 import dayjs from "../../libs/dayjs";
 import { useQuery } from "@tanstack/react-query";
@@ -21,7 +22,17 @@ import { IResponseData, IUser } from "../../types";
 import { AiOutlineSearch } from "react-icons/ai";
 import { useDebounce } from "@uidotdev/usehooks";
 import StudentCellActions from "./StudentCellActions";
-export default function StaffStudentsPage() {
+export default function StaffStudentsPage({
+  title,
+  filter,
+  selectable = false,
+  onSelected,
+}: {
+  title?: string;
+  filter?: string;
+  selectable?: boolean;
+  onSelected?: (user: IUser) => void;
+}) {
   const [page, setPage] = useState(1);
   const axios = useAxiosIns();
   const getUsersQuery = useQuery({
@@ -54,7 +65,7 @@ export default function StaffStudentsPage() {
   const lookupUsers = lookupUsersQuery.data?.data?.data ?? [];
   const users = getUsersQuery.data?.data?.data ?? [];
 
-  const [selectedSex, setSelectedSex] = useState<string>("ALL");
+  const [selectedSex, setSelectedSex] = useState<string>(filter ?? "ALL");
 
   const filterUsers = () => {
     const shouldShowUsers = shouldShowLookupUsers ? lookupUsers : users;
@@ -70,7 +81,9 @@ export default function StaffStudentsPage() {
     <>
       <div>
         <div className="flex items-center justify-between pb-4">
-          <div className="text-lg font-bold">Tra cứu sinh viên</div>
+          <div className="text-lg font-bold">
+            {title ?? "Tra cứu sinh viên"}
+          </div>
           <div className="flex gap-4">
             <div className="w-60">
               <Input
@@ -90,6 +103,7 @@ export default function StaffStudentsPage() {
             </div>
             <Select
               disallowEmptySelection
+              isDisabled={filter !== undefined}
               onSelectionChange={(selection) => {
                 const keys = Array.from(selection) as string[];
                 setSelectedSex(keys[0]?.toString());
@@ -98,7 +112,7 @@ export default function StaffStudentsPage() {
               className="w-40 h-12"
               size="sm"
               variant="bordered"
-              defaultSelectedKeys={["ALL"]}
+              defaultSelectedKeys={[selectedSex]}
               label="Giới tính"
             >
               <SelectItem key="ALL" value="ALL">
@@ -171,7 +185,22 @@ export default function StaffStudentsPage() {
                 {(columnKey) => (
                   <TableCell>
                     {columnKey === "actions" ? (
-                      <StudentCellActions user={item} />
+                      <>
+                        {selectable ? (
+                          <div className="flex items-center">
+                            <Button
+                              size="sm"
+                              onClick={() => onSelected?.(item)}
+                              color="primary"
+                              variant="light"
+                            >
+                              Chọn
+                            </Button>
+                          </div>
+                        ) : (
+                          <StudentCellActions user={item} />
+                        )}
+                      </>
                     ) : (
                       <>
                         {getKeyValue(item, columnKey) ? (

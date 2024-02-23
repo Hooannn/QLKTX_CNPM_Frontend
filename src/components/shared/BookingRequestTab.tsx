@@ -17,7 +17,7 @@ import {
   getKeyValue,
 } from "@nextui-org/react";
 import { useState } from "react";
-import dayjs from "dayjs";
+import dayjs from "../../libs/dayjs";
 import BookingRequestCellActions from "./BookingRequestCellActions";
 
 export default function BookingRequestTab({
