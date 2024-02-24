@@ -118,10 +118,10 @@ export default function StudentDetailModal(props: {
                 <div className="w-full h-full">
                   <Tabs color="primary" variant="underlined">
                     <Tab key="bookings" title="Phiếu thuê">
-                      <BookingsTab />
+                      <BookingsTab student={props.user} />
                     </Tab>
                     <Tab key="invoices" title="Hóa đơn">
-                      <InvoicesTab />
+                      <InvoicesTab student={props.user} />
                     </Tab>
                   </Tabs>
                 </div>

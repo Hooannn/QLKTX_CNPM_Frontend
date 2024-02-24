@@ -514,37 +514,48 @@ function ConfirmStep({
   onNext: (params: { discount?: Discount; autoCreateInvoice: boolean }) => void;
 }) {
   const { user } = useAuthStore();
-  const getTempPrice = () => {
-    const bookingMonths = dayjs(selectedTime?.end_date).diff(
-      selectedTime?.start_date,
-      "month",
-      true
-    );
-    return priceFormat((selectedRoom?.type.price ?? 0) * bookingMonths);
-  };
-
-  const discounts = [
-    {
-      id: "GG10",
-      percentage: 10,
-      description: "Giảm 10%",
-      start_date: "2021-01-01",
-      end_date: "2021-12-31",
-    },
-    {
-      id: "GG20",
-      percentage: 20,
-      description: "Giảm 20%",
-      start_date: "2021-01-01",
-      end_date: "2021-12-31",
-    },
-  ];
 
   const [selectedDiscount, setSelectedDiscount] = useState<
     Discount | undefined
   >();
 
   const [autoCreateInvoice, setAutoCreateInvoice] = useState(true);
+
+  const axios = useAxiosIns();
+
+  const getDiscountQuery = useQuery({
+    queryKey: ["fetch/availableDiscount"],
+    refetchOnWindowFocus: false,
+    queryFn: () => {
+      return axios.get<IResponseData<Discount[]>>(`/api/v1/discount/available`);
+    },
+  });
+
+  const getBookingPriceQuery = useQuery({
+    queryKey: [
+      "fetch/bookingPrice",
+      selectedRoom?.id,
+      selectedTime?.id,
+      selectedDiscount?.id,
+    ],
+    refetchOnWindowFocus: false,
+    queryFn: () => {
+      if (!selectedRoom || !selectedTime) return null;
+      return axios.get<IResponseData<number>>(`/api/v1/booking/price`, {
+        params: {
+          room_id: selectedRoom?.id,
+          booking_time_id: selectedTime?.id,
+          discount_id: selectedDiscount?.id,
+        },
+      });
+    },
+  });
+
+  const discounts = getDiscountQuery.data?.data?.data ?? [];
+  const price = getBookingPriceQuery.data?.data?.data ?? 0;
+
+  const isLoading = getDiscountQuery.isLoading;
+  const isCalculatingPrice = getBookingPriceQuery.isLoading;
   return (
     <Card shadow="sm" radius="sm" className="mx-auto w-full max-w-[720px]">
       <CardHeader>
@@ -557,142 +568,177 @@ function ConfirmStep({
           </div>
         </div>
       </CardHeader>
-      <CardBody className="gap-4">
-        <div>
-          <div className="text-base">Thông tin dãy</div>
-          <div className="flex items-center justify-between">
-            <div className="text-sm opacity-80">Dãy</div>{" "}
-            <div>{selectedRoom?.region.name}</div>
-          </div>
-          <div className="flex items-center justify-between">
-            <div className="text-sm opacity-80">Giới tính</div>
-            <div className="text-right">
-              {SEX_MAP[selectedRoom?.region.sex ?? "OTHER"]}
+      {isLoading ? (
+        <>
+          <CardBody>
+            <div className="flex items-center justify-center py-20">
+              <Spinner size="lg" />
             </div>
-          </div>
-        </div>
-        <div>
-          <div className="text-base">Thông tin phòng</div>
-          <div className="flex items-center justify-between">
-            <div className="text-sm opacity-80">Phòng</div>{" "}
-            <div>{selectedRoom?.id}</div>
-          </div>
-          <div className="flex items-center justify-between">
-            <div className="text-sm opacity-80">Đơn giá</div>
-            <div className="text-right">
-              {priceFormat(selectedRoom?.type.price ?? 0)}
-            </div>
-          </div>
-          <div className="flex items-center justify-between">
-            <div className="text-sm opacity-80">Số giường</div>
-            <div className="text-right">{selectedRoom?.type.capacity}</div>
-          </div>
-        </div>
-        <div>
-          <div className="text-base">Thông tin quản lý nhận phòng</div>
-          <div className="flex items-center justify-between">
-            <div className="text-sm opacity-80">Mã quản lý</div>{" "}
-            <div>{user?.id}</div>
-          </div>
-          <div className="flex items-center justify-between">
-            <div className="text-sm opacity-80">Tên</div>
-            <div className="text-right">
-              {user?.first_name} {user?.last_name}
-            </div>
-          </div>
-          <div className="flex items-center justify-between">
-            <div className="text-sm opacity-80">Giới tính</div>
-            <div className="text-right">{SEX_MAP[user?.sex ?? "OTHER"]}</div>
-          </div>
-        </div>
-        <div>
-          <div className="text-base">Thông tin sinh viên</div>
-          <div className="flex items-center justify-between">
-            <div className="text-sm opacity-80">Mã sinh viên</div>{" "}
-            <div>{selectedStudent?.id}</div>
-          </div>
-          <div className="flex items-center justify-between">
-            <div className="text-sm opacity-80">Tên</div>
-            <div className="text-right">
-              {selectedStudent?.first_name} {selectedStudent?.last_name}
-            </div>
-          </div>
-          <div className="flex items-center justify-between">
-            <div className="text-sm opacity-80">Giới tính</div>
-            <div className="text-right">
-              {SEX_MAP[selectedStudent?.sex ?? "OTHER"]}
-            </div>
-          </div>
-        </div>
-        <div className="flex items-center justify-between">
-          <div className="text-base">Thời gian thuê</div>
-          <div className="text-right flex flex-col">
-            <div>{selectedTime?.description}</div>
+          </CardBody>
+        </>
+      ) : (
+        <>
+          <CardBody className="gap-4">
             <div>
-              {dayjs(selectedTime?.start_date).format("DD/MM/YYYY")} -{" "}
-              {dayjs(selectedTime?.end_date).format("DD/MM/YYYY")}
+              <div className="text-base">Thông tin dãy</div>
+              <div className="flex items-center justify-between">
+                <div className="text-sm opacity-80">Dãy</div>{" "}
+                <div>{selectedRoom?.region.name}</div>
+              </div>
+              <div className="flex items-center justify-between">
+                <div className="text-sm opacity-80">Giới tính</div>
+                <div className="text-right">
+                  {SEX_MAP[selectedRoom?.region.sex ?? "OTHER"]}
+                </div>
+              </div>
             </div>
-          </div>
-        </div>
+            <div>
+              <div className="text-base">Thông tin phòng</div>
+              <div className="flex items-center justify-between">
+                <div className="text-sm opacity-80">Phòng</div>{" "}
+                <div>{selectedRoom?.id}</div>
+              </div>
+              <div className="flex items-center justify-between">
+                <div className="text-sm opacity-80">Đơn giá</div>
+                <div className="text-right">
+                  {priceFormat(selectedRoom?.type.price ?? 0)}
+                </div>
+              </div>
+              <div className="flex items-center justify-between">
+                <div className="text-sm opacity-80">Số giường</div>
+                <div className="text-right">{selectedRoom?.type.capacity}</div>
+              </div>
+            </div>
+            <div>
+              <div className="text-base">Thông tin quản lý nhận phòng</div>
+              <div className="flex items-center justify-between">
+                <div className="text-sm opacity-80">Mã quản lý</div>{" "}
+                <div>{user?.id}</div>
+              </div>
+              <div className="flex items-center justify-between">
+                <div className="text-sm opacity-80">Tên</div>
+                <div className="text-right">
+                  {user?.first_name} {user?.last_name}
+                </div>
+              </div>
+              <div className="flex items-center justify-between">
+                <div className="text-sm opacity-80">Giới tính</div>
+                <div className="text-right">
+                  {SEX_MAP[user?.sex ?? "OTHER"]}
+                </div>
+              </div>
+            </div>
+            <div>
+              <div className="text-base">Thông tin sinh viên</div>
+              <div className="flex items-center justify-between">
+                <div className="text-sm opacity-80">Mã sinh viên</div>{" "}
+                <div>{selectedStudent?.id}</div>
+              </div>
+              <div className="flex items-center justify-between">
+                <div className="text-sm opacity-80">Tên</div>
+                <div className="text-right">
+                  {selectedStudent?.first_name} {selectedStudent?.last_name}
+                </div>
+              </div>
+              <div className="flex items-center justify-between">
+                <div className="text-sm opacity-80">Giới tính</div>
+                <div className="text-right">
+                  {SEX_MAP[selectedStudent?.sex ?? "OTHER"]}
+                </div>
+              </div>
+            </div>
+            <div className="flex items-center justify-between">
+              <div className="text-base">Thời gian thuê</div>
+              <div className="text-right flex flex-col">
+                <div>{selectedTime?.description}</div>
+                <div>
+                  {dayjs(selectedTime?.start_date).format("DD/MM/YYYY")} -{" "}
+                  {dayjs(selectedTime?.end_date).format("DD/MM/YYYY")}
+                </div>
+              </div>
+            </div>
 
-        <div>
-          <div className="text-base">Áp dụng giảm giá</div>
-          <Select
-            onSelectionChange={(key) => {
-              const keyArray = Array.from(key);
-              const k = keyArray[0];
-              setSelectedDiscount(discounts.find((d) => d.id === k));
-            }}
-            placeholder="Chọn giảm giá (nếu có)"
-            size="sm"
-          >
-            {discounts.map((discount) => (
-              <SelectItem key={discount.id} value={discount.id}>
-                {discount.description}
-              </SelectItem>
-            ))}
-          </Select>
-        </div>
+            <div>
+              <div className="text-base">Áp dụng giảm giá</div>
+              <Select
+                items={discounts}
+                onSelectionChange={(key) => {
+                  const keyArray = Array.from(key);
+                  const k = keyArray[0];
+                  setSelectedDiscount(discounts.find((d) => d.id === k));
+                }}
+                placeholder="Chọn giảm giá (nếu có)"
+                size="sm"
+                renderValue={(items) => {
+                  return items.map((item) => (
+                    <div className="flex flex-col">
+                      {item.data?.description}
+                      <small>Phần trăm giảm: {item.data?.percentage}%</small>
+                    </div>
+                  ));
+                }}
+              >
+                {(discount) => (
+                  <SelectItem key={discount.id} value={discount.id}>
+                    <div className="flex flex-col">
+                      {discount.description}
+                      <small>Phần trăm giảm: {discount.percentage}%</small>
+                    </div>
+                  </SelectItem>
+                )}
+              </Select>
+            </div>
 
-        <div className="flex items-center justify-between">
-          <div className="text-base flex flex-col">
-            <div>Giá tiền</div>
-          </div>
-          <div className="text-right text-lg font-semibold">
-            {getTempPrice()}
-          </div>
-        </div>
-      </CardBody>
-      <Divider />
-      <CardFooter>
-        <div className="flex justify-center w-full gap-4 items-center">
-          <div className="w-1/2">
-            <Checkbox
-              isSelected={autoCreateInvoice}
-              onValueChange={setAutoCreateInvoice}
-              color="primary"
-              defaultSelected
-            >
-              Tự động tạo hóa đơn
-              <br />
-              <small>Hóa đơn sẽ được tạo tự động khi phiếu thuê được tạo</small>
-            </Checkbox>
-          </div>
-          <Button
-            size="lg"
-            color="primary"
-            className="w-1/2"
-            onClick={() => {
-              onNext({
-                discount: selectedDiscount,
-                autoCreateInvoice,
-              });
-            }}
-          >
-            Xác nhận
-          </Button>
-        </div>
-      </CardFooter>
+            <div className="flex items-center justify-between">
+              <div className="text-base flex flex-col">
+                <div>Giá tiền</div>
+              </div>
+              <div className="text-right text-lg font-semibold">
+                {isCalculatingPrice ? (
+                  <div className="flex items-center">
+                    <Spinner size="sm" />
+                  </div>
+                ) : (
+                  priceFormat(price)
+                )}
+              </div>
+            </div>
+          </CardBody>
+          <Divider />
+          <CardFooter>
+            <div className="flex justify-center w-full gap-4 items-center">
+              <div className="w-1/2">
+                <Checkbox
+                  isSelected={autoCreateInvoice}
+                  onValueChange={setAutoCreateInvoice}
+                  color="primary"
+                  defaultSelected
+                >
+                  Tự động tạo hóa đơn
+                  <br />
+                  <small>
+                    Hóa đơn sẽ được tạo tự động khi phiếu thuê được tạo
+                  </small>
+                </Checkbox>
+              </div>
+              <Button
+                size="lg"
+                isDisabled={isCalculatingPrice}
+                color="primary"
+                className="w-1/2"
+                onClick={() => {
+                  onNext({
+                    discount: selectedDiscount,
+                    autoCreateInvoice,
+                  });
+                }}
+              >
+                Xác nhận
+              </Button>
+            </div>
+          </CardFooter>
+        </>
+      )}
     </Card>
   );
 }

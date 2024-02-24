@@ -28,4 +28,14 @@ export interface Discount {
   description: string;
   start_date: string;
   end_date: string;
+  staff: IUser;
+}
+
+export interface Invoice {
+  id: number;
+  booking: Booking;
+  created_at: string;
+  total: number;
+  paid_at?: string;
+  staff: IUser;
 }
