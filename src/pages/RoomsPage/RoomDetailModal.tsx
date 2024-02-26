@@ -1,5 +1,5 @@
-import { AiOutlineClose, AiOutlineDelete } from "react-icons/ai";
-import { IResponseData, Room } from "../../types";
+import { AiOutlineClose } from "react-icons/ai";
+import { Booking, IResponseData, Room } from "../../types";
 import {
   Button,
   Modal,
@@ -11,11 +11,12 @@ import {
   Tabs,
 } from "@nextui-org/react";
 import useAxiosIns from "../../hooks/useAxiosIns";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import CurrentBookingsTab from "./CurrentBookingsTab";
-import { SEX_MAP } from "../../utils/map";
+import { SEX_MAP, STATUS_MAP } from "../../utils/map";
 import { priceFormat } from "../../utils/priceFormat";
 import CheckedOutTab from "../StaffBookingsPage/CheckedOutTab";
+import RoomActions from "./RoomActions";
 export default function RoomDetailModal(props: {
   isOpen: boolean;
   isStaff: boolean;
@@ -23,6 +24,7 @@ export default function RoomDetailModal(props: {
   room: Room;
 }) {
   const axios = useAxiosIns();
+  const queryClient = useQueryClient();
   const getDetailQuery = useQuery({
     queryKey: ["fetch/roomDetail", props.room.id],
     refetchOnWindowFocus: false,
@@ -32,7 +34,22 @@ export default function RoomDetailModal(props: {
     },
   });
 
+  const getCurrentBookingsQuery = useQuery({
+    queryKey: ["fetch/currentBookingsByRoom", props.room.id],
+    refetchOnWindowFocus: false,
+    enabled: props.isOpen,
+    queryFn: () => {
+      return axios.get<IResponseData<Booking[]>>(
+        `/api/v1/booking/room/${props.room.id}`
+      );
+    },
+  });
+
+  const bookings = getCurrentBookingsQuery.data?.data?.data || [];
   const roomDetail = getDetailQuery.data?.data?.data;
+
+  const isLoading =
+    getDetailQuery.isLoading || getCurrentBookingsQuery.isLoading;
   return (
     <>
       <Modal
@@ -51,7 +68,7 @@ export default function RoomDetailModal(props: {
                 Thông tin chi tiết
               </ModalHeader>
               <ModalBody className="flex-row">
-                {getDetailQuery.isLoading ? (
+                {isLoading ? (
                   <div className="w-full flex justify-center">
                     <Spinner size="lg" />
                   </div>
@@ -65,6 +82,12 @@ export default function RoomDetailModal(props: {
                             <div className="flex items-center justify-between">
                               <div className="opacity-70">Mã phòng</div>{" "}
                               <div>{roomDetail?.id}</div>
+                            </div>
+                            <div className="flex items-center justify-between">
+                              <div className="opacity-70">Trạng thái</div>{" "}
+                              <div>
+                                {STATUS_MAP[roomDetail?.status ?? "AVAILABLE"]}
+                              </div>
                             </div>
                           </div>
                         </div>
@@ -109,39 +132,26 @@ export default function RoomDetailModal(props: {
                       </div>
 
                       <div className="flex gap-2 items-center flex-col justify-center w-full py-4">
-                        <Button
-                          color="primary"
-                          variant="flat"
-                          className="py-6 w-full"
-                        >
-                          Chuyển trạng thái
-                        </Button>
-                        <Button
-                          color="primary"
-                          variant="flat"
-                          className="py-6 w-full"
-                        >
-                          Chuyển loại phòng
-                        </Button>
-                        <Button
-                          color="primary"
-                          variant="flat"
-                          className="py-6 w-full"
-                        >
-                          Chuyển sang dãy khác
-                        </Button>
-                        <Button color="danger" className="py-6 w-full">
-                          <AiOutlineDelete />
-                          Xoá phòng
-                        </Button>
+                        <RoomActions
+                          onDeleted={() => {
+                            props.onClose();
+                            queryClient.invalidateQueries(["fetch/rooms"]);
+                          }}
+                          onUpdated={() => {
+                            queryClient.invalidateQueries([
+                              "fetch/roomDetail",
+                              props.room.id,
+                            ]);
+                            queryClient.invalidateQueries(["fetch/rooms"]);
+                          }}
+                          room={roomDetail}
+                        />
                       </div>
                     </div>
                     <div className="w-full h-full">
                       <Tabs color="primary" variant="underlined">
                         <Tab key="current" title="Lưu trú hiện tại">
-                          <CurrentBookingsTab
-                            bookings={roomDetail?.bookings || []}
-                          />
+                          <CurrentBookingsTab bookings={bookings} />
                         </Tab>
                         <Tab key="all" title="Các phiếu thuê trước đây">
                           <CheckedOutTab room={props.room} />

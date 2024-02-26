@@ -11,7 +11,8 @@ export default function CurrentTab() {
 
   const getBookingsQuery = useQuery({
     queryKey: ["fetch/currentBookings"],
-    queryFn: () => axios.get<IResponseData<Booking[]>>("/api/v1/booking"),
+    queryFn: () =>
+      axios.get<IResponseData<Booking[]>>("/api/v1/booking/current"),
     refetchOnWindowFocus: false,
   });
 
