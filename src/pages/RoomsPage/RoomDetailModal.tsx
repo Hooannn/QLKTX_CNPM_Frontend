@@ -119,7 +119,7 @@ export default function RoomDetailModal(props: {
                             </div>
                             <div className="flex items-center justify-between">
                               <div className="opacity-70">Đang lưu trú</div>{" "}
-                              <div>{roomDetail?.bookings?.length}</div>
+                              <div>{bookings.length}</div>
                             </div>
                             <div className="flex items-center justify-between">
                               <div className="opacity-70">Đơn giá</div>{" "}

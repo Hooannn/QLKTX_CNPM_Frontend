@@ -97,6 +97,12 @@ export default function BookingDetailModal(props: {
                               <div>{bookingDetail?.id}</div>
                             </div>
                             <div className="flex items-center justify-between">
+                              <div className="opacity-70">Ngày lập</div>{" "}
+                              <div>{dayjs(
+                                bookingDetail?.created_at
+                              ).format("DD/MM/YYYY")}</div>
+                            </div>
+                            <div className="flex items-center justify-between">
                               <div className="opacity-70">
                                 Thời gian bắt đầu
                               </div>{" "}
@@ -205,7 +211,7 @@ export default function BookingDetailModal(props: {
                               <div>
                                 {
                                   SEX_MAP[
-                                    bookingDetail?.checkin_staff.sex ?? "OTHER"
+                                  bookingDetail?.checkin_staff.sex ?? "OTHER"
                                   ]
                                 }
                               </div>
@@ -238,8 +244,8 @@ export default function BookingDetailModal(props: {
                               <div>
                                 {bookingDetail?.checkout_staff?.sex ? (
                                   SEX_MAP[
-                                    bookingDetail?.checkout_staff?.sex ??
-                                      "OTHER"
+                                  bookingDetail?.checkout_staff?.sex ??
+                                  "OTHER"
                                   ]
                                 ) : (
                                   <small>Chưa cập nhật</small>
