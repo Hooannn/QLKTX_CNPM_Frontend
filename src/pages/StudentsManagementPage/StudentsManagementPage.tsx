@@ -20,18 +20,19 @@ import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import useAxiosIns from "../../hooks/useAxiosIns";
 import { IResponseData, IUser } from "../../types";
-import CreateUserModal from "./CreateUserModal";
-import UserCellActions from "./UserCellActions";
+import CreateStudentModal from "./CreateStudentModal";
+import UserCellActions from "./StudentCellActions";
 import { AiOutlineSearch } from "react-icons/ai";
 import { useDebounce } from "@uidotdev/usehooks";
+import { SEX_MAP } from "../../utils/map";
 export default function UsersManagementPage() {
   const [page, setPage] = useState(1);
   const axios = useAxiosIns();
   const getUsersQuery = useQuery({
-    queryKey: ["fetch/users"],
+    queryKey: ["fetch/students-management"],
     refetchOnWindowFocus: false,
     queryFn: () => {
-      return axios.get<IResponseData<IUser[]>>(`/api/v1/users`);
+      return axios.get<IResponseData<IUser[]>>(`/api/v1/students`);
     },
   });
 
@@ -42,11 +43,11 @@ export default function UsersManagementPage() {
   const shouldShowLookupUsers = debouncedSearchKeyword.trim().length > 0;
 
   const lookupUsersQuery = useQuery({
-    queryKey: ["lookup/users", debouncedSearchKeyword],
+    queryKey: ["lookup/users/students-management", debouncedSearchKeyword],
     refetchOnWindowFocus: false,
     queryFn: () => {
       if (!shouldShowLookupUsers) return null;
-      return axios.get<IResponseData<IUser[]>>(`/api/v1/users/lookup`, {
+      return axios.get<IResponseData<IUser[]>>(`/api/v1/students/lookup`, {
         params: {
           keyword: debouncedSearchKeyword,
         },
@@ -64,34 +65,28 @@ export default function UsersManagementPage() {
   } = useDisclosure();
 
   const [selectedSex, setSelectedSex] = useState<string>("ALL");
-  const [selectedRole, setSelectedRole] = useState<string>("ALL");
 
   const filterUsers = () => {
     const shouldShowUsers = shouldShowLookupUsers ? lookupUsers : users;
-    return shouldShowUsers
-      .filter((user) => {
-        if (selectedSex !== "ALL") return user.sex === selectedSex;
-        return true;
-      })
-      .filter((user) => {
-        if (selectedRole !== "ALL") return user.role === selectedRole;
-        return true;
-      });
+    return shouldShowUsers.filter((user) => {
+      if (selectedSex !== "ALL") return user.sex === selectedSex;
+      return true;
+    });
   };
 
   const tableItems = filterUsers().slice((page - 1) * 10, page * 10);
 
   return (
     <>
-      <CreateUserModal
+      <CreateStudentModal
         isOpen={isCreateUserModalOpen}
         onClose={onCreateUserModalClose}
       />
       <div>
         <div className="flex items-center justify-between pb-4">
-          <div className="text-lg font-bold">Quản lý người dùng</div>
+          <div className="text-lg font-bold">Quản lý sinh viên</div>
           <div className="flex gap-4">
-            <div className="w-1/3">
+            <div className="w-1/2">
               <Input
                 value={searchKeyword}
                 onValueChange={(value) => setSearchKeyword(value)}
@@ -133,29 +128,6 @@ export default function UsersManagementPage() {
                 Khác
               </SelectItem>
             </Select>
-            <Select
-              disallowEmptySelection
-              defaultSelectedKeys={["ALL"]}
-              size="sm"
-              color="primary"
-              className="w-40"
-              variant="bordered"
-              label="Quyền"
-              onSelectionChange={(selection) => {
-                const keys = Array.from(selection) as string[];
-                setSelectedRole(keys[0]?.toString());
-              }}
-            >
-              <SelectItem key="ALL" value="ALL">
-                Tất cả
-              </SelectItem>
-              <SelectItem key="STUDENT" value="STUDENT">
-                Sinh viên
-              </SelectItem>
-              <SelectItem key="STAFF" value="STAFF">
-                Quản lý
-              </SelectItem>
-            </Select>
             <Button
               onClick={onOpenCreateUserModal}
               color="primary"
@@ -193,7 +165,6 @@ export default function UsersManagementPage() {
             <TableColumn key="email">Email</TableColumn>
             <TableColumn key="address">Địa chỉ</TableColumn>
             <TableColumn key="phone">Số ĐT</TableColumn>
-            <TableColumn key="role">Quyền</TableColumn>
             <TableColumn key="sex">Giới tính</TableColumn>
             <TableColumn key="date_of_birth">Ngày sinh</TableColumn>
             <TableColumn key="actions">Thao tác</TableColumn>
@@ -226,11 +197,16 @@ export default function UsersManagementPage() {
                       <>
                         {getKeyValue(item, columnKey) ? (
                           <>
-                            {columnKey === "date_of_birth"
-                              ? dayjs(getKeyValue(item, columnKey)).format(
-                                  "DD/MM/YYYY"
-                                )
-                              : getKeyValue(item, columnKey)}
+                            {columnKey === "date_of_birth" &&
+                              dayjs(getKeyValue(item, columnKey)).format(
+                                "DD/MM/YYYY"
+                              )}
+                            {columnKey === "sex" &&
+                              SEX_MAP[getKeyValue(item, columnKey)]}
+
+                            {columnKey !== "date_of_birth" &&
+                              columnKey !== "sex" &&
+                              getKeyValue(item, columnKey)}
                           </>
                         ) : (
                           <i>

@@ -26,7 +26,6 @@ type CreateUserInputs = {
   phone?: string;
   address: string;
   sex: string;
-  role: string;
 };
 
 export default function CreateUserModal(props: {
@@ -55,11 +54,11 @@ export default function CreateUserModal(props: {
 
   const createUserMutation = useMutation({
     mutationFn: (params: CreateUserInputs) =>
-      axios.post<IResponseData<IUser>>(`/api/v1/users`, params),
+      axios.post<IResponseData<IUser>>(`/api/v1/staffs`, params),
     onError,
     onSuccess(data) {
       toast.success(data.data?.message);
-      queryClient.invalidateQueries(["fetch/users"]);
+      queryClient.invalidateQueries(["fetch/staffs-management"]);
     },
   });
 
@@ -70,7 +69,7 @@ export default function CreateUserModal(props: {
           {() => (
             <>
               <ModalHeader className="flex flex-col gap-1">
-                Tạo người dùng mới
+                Tạo nhân viên mới
               </ModalHeader>
               <ModalBody>
                 <div className="w-full h-full flex gap-4">
@@ -78,11 +77,11 @@ export default function CreateUserModal(props: {
                     <Input
                       errorMessage={errors.id?.message}
                       {...register("id", {
-                        required: "Mã người dùng là bắt buộc",
+                        required: "Mã nhân viên là bắt buộc",
                       })}
                       variant="bordered"
                       size={"md"}
-                      label="Mã người dùng"
+                      label="Mã nhân viên"
                     />
                     <Input
                       errorMessage={errors.first_name?.message}
@@ -180,22 +179,6 @@ export default function CreateUserModal(props: {
                       </SelectItem>
                       <SelectItem key="OTHER" value="OTHER">
                         Khác
-                      </SelectItem>
-                    </Select>
-                    <Select
-                      errorMessage={errors.role?.message}
-                      {...register("role", {
-                        required: "Quyền là bắt buộc",
-                      })}
-                      variant="bordered"
-                      label="Quyền"
-                      size="md"
-                    >
-                      <SelectItem key="STUDENT" value="STUDENT">
-                        Sinh viên
-                      </SelectItem>
-                      <SelectItem key="STAFF" value="STAFF">
-                        Quản lý
                       </SelectItem>
                     </Select>
                   </div>

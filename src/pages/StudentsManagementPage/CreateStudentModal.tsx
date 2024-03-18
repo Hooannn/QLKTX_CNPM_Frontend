@@ -16,33 +16,30 @@ import { onError } from "../../utils/error-handlers";
 import useAxiosIns from "../../hooks/useAxiosIns";
 import { SubmitHandler, useForm } from "react-hook-form";
 import dayjs from "../../libs/dayjs";
-type UpdateUserInputs = {
+type CreateUserInputs = {
+  id: string;
   first_name: string;
   last_name: string;
   password: string;
-  date_of_birth?: string;
-  phone: string;
-  address?: string;
+  email: string;
+  date_of_birth: string;
+  phone?: string;
+  address: string;
   sex: string;
 };
 
-export default function UpdateUserModal(props: {
+export default function CreateUserModal(props: {
   isOpen: boolean;
   onClose: () => void;
-  user: IUser;
 }) {
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<UpdateUserInputs>();
+  } = useForm<CreateUserInputs>();
 
-  const onSubmit: SubmitHandler<UpdateUserInputs> = async (data) => {
-    if (!data.date_of_birth) delete data.date_of_birth;
-    else data.date_of_birth = dayjs(data.date_of_birth).toISOString();
-
-    console.log(data);
-
+  const onSubmit: SubmitHandler<CreateUserInputs> = async (data) => {
+    data.date_of_birth = dayjs(data.date_of_birth).toISOString();
     await createUserMutation.mutateAsync(data);
     props.onClose();
   };
@@ -56,12 +53,12 @@ export default function UpdateUserModal(props: {
   };
 
   const createUserMutation = useMutation({
-    mutationFn: (params: UpdateUserInputs) =>
-      axios.put<IResponseData<IUser>>(`/api/v1/users/${props.user.id}`, params),
+    mutationFn: (params: CreateUserInputs) =>
+      axios.post<IResponseData<IUser>>(`/api/v1/students`, params),
     onError,
     onSuccess(data) {
       toast.success(data.data?.message);
-      queryClient.invalidateQueries(["fetch/users"]);
+      queryClient.invalidateQueries(["fetch/students-management"]);
     },
   });
 
@@ -72,20 +69,21 @@ export default function UpdateUserModal(props: {
           {() => (
             <>
               <ModalHeader className="flex flex-col gap-1">
-                Cập nhật người dùng
+                Tạo sinh viên mới
               </ModalHeader>
               <ModalBody>
                 <div className="w-full h-full flex gap-4">
                   <div className="flex flex-col gap-4 w-full">
                     <Input
-                      defaultValue={props.user.id}
-                      isDisabled
+                      errorMessage={errors.id?.message}
+                      {...register("id", {
+                        required: "Mã sinh viên là bắt buộc",
+                      })}
                       variant="bordered"
                       size={"md"}
-                      label="Mã người dùng"
+                      label="Mã sinh viên"
                     />
                     <Input
-                      defaultValue={props.user.first_name}
                       errorMessage={errors.first_name?.message}
                       {...register("first_name", {
                         required: "Tên là bắt buộc",
@@ -95,7 +93,6 @@ export default function UpdateUserModal(props: {
                       label="Tên"
                     />
                     <Input
-                      defaultValue={props.user.last_name}
                       errorMessage={errors.last_name?.message}
                       {...register("last_name", {
                         required: "Họ là bắt buộc",
@@ -105,8 +102,14 @@ export default function UpdateUserModal(props: {
                       label="Họ"
                     />
                     <Input
-                      isDisabled
-                      defaultValue={props.user.email}
+                      errorMessage={errors.email?.message}
+                      {...register("email", {
+                        required: "Email là bắt buộc",
+                        pattern: {
+                          value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i,
+                          message: "Email không hợp lệ",
+                        },
+                      })}
                       variant="bordered"
                       size={"md"}
                       label="Email"
@@ -114,20 +117,19 @@ export default function UpdateUserModal(props: {
                     <Input
                       errorMessage={errors.password?.message}
                       {...register("password", {
-                        required: false,
+                        required: "Mật khẩu là bắt buộc",
                       })}
                       variant="bordered"
                       size={"md"}
                       type="password"
-                      label="Cài lại mật khẩu"
+                      label="Mật khẩu đăng nhập"
                     />
                   </div>
                   <div className="flex flex-col gap-4 w-full">
                     <Input
-                      defaultValue={props.user.phone}
                       errorMessage={errors.phone?.message}
                       {...register("phone", {
-                        required: "Số điện thoại là bắt buộc",
+                        required: false,
                         pattern: {
                           value: /^\d{10}$/,
                           message: "Số điện thoại không hợp lệ",
@@ -135,41 +137,36 @@ export default function UpdateUserModal(props: {
                       })}
                       variant="bordered"
                       size={"md"}
-                      label="Số điện thoại"
+                      label="Số điện thoại (tùy chọn)"
                     />
                     <Input
-                      defaultValue={props.user.address}
                       {...register("address", {
-                        required: false,
+                        required: "Địa chỉ là bắt buộc",
                       })}
                       variant="bordered"
                       size={"md"}
-                      label="Địa chỉ (tùy chọn)"
+                      label="Địa chỉ"
                     />
                     <Input
-                      defaultValue={
-                        props.user.date_of_birth
-                          ? dayjs(props.user.date_of_birth).format("MM/DD/YYYY")
-                          : ""
-                      }
                       errorMessage={errors.date_of_birth?.message}
                       {...register("date_of_birth", {
+                        required: "Ngày sinh là bắt buộc",
                         validate: {
                           validDate: (value) =>
                             isValidDate(value ?? "") ||
                             "Ngày sinh phải đúng định dạng (mm/dd/yyyy)",
                         },
                       })}
+                      placeholder="mm/dd/yyyy"
                       variant="bordered"
                       size={"md"}
-                      label="Ngày sinh (tùy chọn)"
+                      label="Ngày sinh"
                     />
                     <Select
                       errorMessage={errors.sex?.message}
                       {...register("sex", {
                         required: "Giới tính là bắt buộc",
                       })}
-                      defaultSelectedKeys={[props.user.sex]}
                       variant="bordered"
                       label="Giới tính"
                       size="md"
@@ -182,20 +179,6 @@ export default function UpdateUserModal(props: {
                       </SelectItem>
                       <SelectItem key="OTHER" value="OTHER">
                         Khác
-                      </SelectItem>
-                    </Select>
-                    <Select
-                      isDisabled
-                      defaultSelectedKeys={[props.user.role]}
-                      variant="bordered"
-                      label="Quyền"
-                      size="md"
-                    >
-                      <SelectItem key="STUDENT" value="STUDENT">
-                        Sinh viên
-                      </SelectItem>
-                      <SelectItem key="STAFF" value="STAFF">
-                        Quản lý
                       </SelectItem>
                     </Select>
                   </div>
@@ -214,7 +197,7 @@ export default function UpdateUserModal(props: {
                   color="primary"
                   onClick={handleSubmit(onSubmit)}
                 >
-                  Cập nhật
+                  Tạo
                 </Button>
               </ModalFooter>
             </>

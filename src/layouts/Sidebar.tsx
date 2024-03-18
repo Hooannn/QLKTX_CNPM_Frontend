@@ -7,6 +7,8 @@ import {
   AiOutlineSearch,
   AiOutlineClockCircle,
 } from "react-icons/ai";
+import { FaUserTie } from "react-icons/fa";
+
 import { MdOutlineDiscount } from "react-icons/md";
 import { GiBunkBeds } from "react-icons/gi";
 import { LiaFileInvoiceDollarSolid } from "react-icons/lia";
@@ -32,7 +34,7 @@ export default function Sidebar() {
   };
 
   const menuItems = useMemo(() => {
-    switch (user?.role) {
+    switch (user?.account.role) {
       case Role.STUDENT:
         return [
           {
@@ -97,9 +99,54 @@ export default function Sidebar() {
       default:
         return [
           {
-            to: "/users-management",
+            to: "/staff",
+            icon: <AiOutlineDashboard size={25} />,
+            label: "Trang chủ",
+          },
+          {
+            to: "/staff/rooms",
+            icon: <AiOutlineHome size={25} />,
+            label: "Dãy và phòng",
+          },
+          {
+            to: "/staff/room-types",
+            icon: <GiBunkBeds size={25} />,
+            label: "Loại phòng",
+          },
+          {
+            to: "/staff/booking-time",
+            icon: <AiOutlineClockCircle size={25} />,
+            label: "Thời gian thuê",
+          },
+          {
+            to: "/staff/bookings",
+            icon: <GrDocumentUser size={25} />,
+            label: "Phiếu thuê",
+          },
+          {
+            to: "/staff/invoices",
+            icon: <LiaFileInvoiceDollarSolid size={25} />,
+            label: "Hoá đơn",
+          },
+          {
+            to: "/staff/discount",
+            icon: <MdOutlineDiscount size={25} />,
+            label: "Giảm giá",
+          },
+          {
+            to: "/staff/students",
+            icon: <AiOutlineSearch size={25} />,
+            label: "Tra cứu sinh viên",
+          },
+          {
+            to: "/students-management",
             icon: <AiOutlineUsergroupAdd size={25} />,
-            label: "Quản lý người dùng",
+            label: "Quản lý sinh viên",
+          },
+          {
+            to: "/staffs-management",
+            icon: <FaUserTie size={25} />,
+            label: "Quản lý nhân viên",
           },
         ];
     }

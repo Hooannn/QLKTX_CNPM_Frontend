@@ -98,9 +98,11 @@ export default function BookingDetailModal(props: {
                             </div>
                             <div className="flex items-center justify-between">
                               <div className="opacity-70">Ngày lập</div>{" "}
-                              <div>{dayjs(
-                                bookingDetail?.created_at
-                              ).format("DD/MM/YYYY")}</div>
+                              <div>
+                                {dayjs(bookingDetail?.created_at).format(
+                                  "DD/MM/YYYY"
+                                )}
+                              </div>
                             </div>
                             <div className="flex items-center justify-between">
                               <div className="opacity-70">
@@ -211,7 +213,7 @@ export default function BookingDetailModal(props: {
                               <div>
                                 {
                                   SEX_MAP[
-                                  bookingDetail?.checkin_staff.sex ?? "OTHER"
+                                    bookingDetail?.checkin_staff.sex ?? "OTHER"
                                   ]
                                 }
                               </div>
@@ -244,8 +246,8 @@ export default function BookingDetailModal(props: {
                               <div>
                                 {bookingDetail?.checkout_staff?.sex ? (
                                   SEX_MAP[
-                                  bookingDetail?.checkout_staff?.sex ??
-                                  "OTHER"
+                                    bookingDetail?.checkout_staff?.sex ??
+                                      "OTHER"
                                   ]
                                 ) : (
                                   <small>Chưa cập nhật</small>
@@ -257,7 +259,10 @@ export default function BookingDetailModal(props: {
                       </div>
 
                       <div className="flex gap-2 items-center flex-col justify-center w-full py-4">
-                        <BookingActions booking={bookingDetail} />
+                        <BookingActions
+                          hadInvoice={invoices.length > 0}
+                          booking={bookingDetail}
+                        />
                       </div>
                     </div>
                     <div className="h-full flex flex-col items-center gap-3 w-[500px] border-r-1 border-gray pr-5">

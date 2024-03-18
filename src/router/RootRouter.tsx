@@ -15,6 +15,8 @@ import StaffDiscountPage from "../pages/StaffDiscountPage";
 import StaffExtraChargesPage from "../pages/StaffExtraChargesPage";
 import StaffBookingTimePage from "../pages/StaffBookingTimePage";
 import StaffBookingsPage from "../pages/StaffBookingsPage";
+import StudentsManagementPage from "../pages/StudentsManagementPage";
+import StaffsManagementPage from "../pages/StaffsManagementPage";
 const rootRouter = [
   {
     path: "/",
@@ -31,8 +33,12 @@ const rootRouter = [
         element: <DashboardPage />,
       },
       {
-        path: "/users-management",
-        element: <UsersManagementPage />,
+        path: "/staffs-management",
+        element: <StaffsManagementPage />,
+      },
+      {
+        path: "/students-management",
+        element: <StudentsManagementPage />,
       },
       {
         path: "/student",

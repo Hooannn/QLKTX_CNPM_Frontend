@@ -11,10 +11,7 @@ const useAuth = () => {
 
   const saveCredentialsAndRedirect = (user: IUser, accessToken: string) => {
     let redirectPath: string | undefined;
-    switch (user.role) {
-      case Role.ADMIN:
-        redirectPath = "/users-management";
-        break;
+    switch (user.account.role) {
       case Role.STUDENT:
         redirectPath = "/student";
         break;

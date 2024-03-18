@@ -14,7 +14,10 @@ export interface IUser {
   first_name: string;
   last_name: string;
   picture?: string;
-  role: Role;
+  account: {
+    username: string;
+    role: Role;
+  };
 }
 
 export interface Credentials {

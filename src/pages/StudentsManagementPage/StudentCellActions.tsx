@@ -1,7 +1,7 @@
 import { Button, useDisclosure } from "@nextui-org/react";
 import { IUser } from "../../types";
-import DeleteUserModal from "./DeleteUserModal";
-import UpdateUserModal from "./UpdateUserModal";
+import DeleteUserModal from "./DeleteStudentModal";
+import UpdateUserModal from "./UpdateStudentModal";
 
 export default function UserCellActions({ user }: { user: IUser }) {
   const {

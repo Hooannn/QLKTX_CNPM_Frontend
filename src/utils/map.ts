@@ -8,3 +8,9 @@ export const STATUS_MAP = {
   UNAVAILABLE: "Đầy",
   MAINTAINING: "Bảo trì",
 };
+
+export const ROLE_MAP = {
+  ADMIN: "Quản lý",
+  STAFF: "Nhân viên",
+  STUDENT: "Sinh viên",
+};

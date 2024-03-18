@@ -22,11 +22,11 @@ export default function DeleteUserModal(props: {
 
   const deleteUserMutation = useMutation({
     mutationFn: () =>
-      axios.delete<IResponseData<unknown>>(`/api/v1/users/${props.user.id}`),
+      axios.delete<IResponseData<unknown>>(`/api/v1/students/${props.user.id}`),
     onError,
     onSuccess(data) {
       toast.success(data.data?.message);
-      queryClient.invalidateQueries(["fetch/users"]);
+      queryClient.invalidateQueries(["fetch/students-management"]);
     },
   });
 
@@ -42,10 +42,10 @@ export default function DeleteUserModal(props: {
           {() => (
             <>
               <ModalHeader className="flex flex-col gap-1">
-                Xác nhận xoá người dùng
+                Xác nhận xoá sinh viên
               </ModalHeader>
               <ModalBody>
-                <p>Bạn có chắc muốn xoá người dùng này?</p>
+                <p>Bạn có chắc muốn xoá sinh viên này?</p>
                 <p className="text-red-500">
                   Hành động này không thể hoàn tác. Tất cả dữ liệu sẽ bị mất.
                 </p>

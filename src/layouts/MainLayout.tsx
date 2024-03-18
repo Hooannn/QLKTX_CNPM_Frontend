@@ -8,6 +8,7 @@ import {
   User,
 } from "@nextui-org/react";
 import useAuthStore from "../stores/auth";
+import { ROLE_MAP } from "../utils/map";
 
 export default function MainLayout() {
   const { user, reset } = useAuthStore();
@@ -30,7 +31,7 @@ export default function MainLayout() {
                     src: user?.picture,
                   }}
                   className="transition-transform"
-                  description={user?.role}
+                  description={ROLE_MAP[user?.account.role]}
                   name={user?.first_name + " " + user?.last_name}
                 />
               </DropdownTrigger>

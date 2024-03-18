@@ -3,7 +3,13 @@ import { Booking } from "../../types";
 import CheckoutModal from "./CheckoutModal";
 import CreateInvoiceModal from "./CreateInvoiceModal";
 
-export default function BookingActions({ booking }: { booking?: Booking }) {
+export default function BookingActions({
+  booking,
+  hadInvoice,
+}: {
+  booking?: Booking;
+  hadInvoice: boolean;
+}) {
   const {
     isOpen: isCheckoutModalOpen,
     onOpen: onCheckoutModalOpen,
@@ -29,7 +35,7 @@ export default function BookingActions({ booking }: { booking?: Booking }) {
         onClose={onCheckoutModalClose}
       />
       <Button
-        isDisabled={isDisabled}
+        isDisabled={isDisabled || hadInvoice}
         color="primary"
         onClick={onCreateInvoiceModalOpen}
         variant="flat"
