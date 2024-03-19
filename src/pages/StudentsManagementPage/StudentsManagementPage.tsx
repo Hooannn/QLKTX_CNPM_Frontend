@@ -170,7 +170,7 @@ export default function UsersManagementPage() {
             <TableColumn key="actions">Thao tác</TableColumn>
           </TableHeader>
           <TableBody
-            items={tableItems}
+            items={tableItems.map((item) => ({ ...item, email: item.account.email }))}
             emptyContent={
               <div>
                 <Image

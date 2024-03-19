@@ -203,6 +203,7 @@ export default function UsersManagementPage() {
             items={tableItems.map((item) => ({
               ...item,
               role: item.account.role,
+              email: item.account.email
             }))}
             emptyContent={
               <div>

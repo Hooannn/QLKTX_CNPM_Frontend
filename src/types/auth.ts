@@ -6,7 +6,6 @@ export enum Role {
 
 export interface IUser {
   id: string;
-  email: string;
   phone: string;
   address: string;
   date_of_birth: string;
@@ -17,6 +16,7 @@ export interface IUser {
   account: {
     username: string;
     role: Role;
+    email: string;
   };
 }
 
