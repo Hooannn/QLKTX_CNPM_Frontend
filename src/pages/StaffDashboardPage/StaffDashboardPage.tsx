@@ -6,9 +6,24 @@ import { useNavigate } from "react-router";
 import { AiOutlineHome, AiOutlineUserSwitch } from "react-icons/ai";
 import { GiBunkBeds } from "react-icons/gi";
 import { LiaFileInvoiceDollarSolid } from "react-icons/lia";
+import useAxiosIns from "../../hooks/useAxiosIns";
+import { useQuery } from "@tanstack/react-query";
+import { IResponseData, StatisticOverview } from "../../types";
 export default function StaffDashboardPage() {
   const { user } = useAuthStore();
   const navigate = useNavigate();
+
+  const axios = useAxiosIns();
+
+  const getStatisticOverviewQuery = useQuery({
+    queryKey: ["fetch/statisticOverview"],
+    queryFn: () =>
+      axios.get<IResponseData<StatisticOverview>>("/api/v1/statistic/overview"),
+    refetchOnWindowFocus: false,
+  });
+
+  const statistic = getStatisticOverviewQuery.data?.data?.data;
+
   return (
     <div className="flex flex-col gap-4 h-full">
       <div className="w-full">
@@ -41,19 +56,27 @@ export default function StaffDashboardPage() {
               <CardBody className="py-0 flex flex-row gap-8">
                 <div>
                   <div className="text-sm text-gray-500">Số dãy phòng</div>
-                  <div className="text-2xl font-semibold">4</div>
+                  <div className="text-2xl font-semibold">
+                    {statistic?.totalRegions}
+                  </div>
                 </div>
                 <div>
                   <div className="text-sm text-gray-500">Tổng số phòng</div>
-                  <div className="text-2xl font-semibold">96</div>
+                  <div className="text-2xl font-semibold">
+                    {statistic?.totalRooms}
+                  </div>
                 </div>
                 <div>
                   <div className="text-sm text-gray-500">Đang sửa chữa</div>
-                  <div className="text-2xl font-semibold">3</div>
+                  <div className="text-2xl font-semibold">
+                    {statistic?.totalMaintainingRooms}
+                  </div>
                 </div>
                 <div>
                   <div className="text-sm text-gray-500">Phòng trống</div>
-                  <div className="text-2xl font-semibold">50</div>
+                  <div className="text-2xl font-semibold">
+                    {statistic?.totalEmptyRooms}
+                  </div>
                 </div>
               </CardBody>
             </div>
@@ -75,15 +98,21 @@ export default function StaffDashboardPage() {
               <CardHeader className="py-2">
                 <strong>Loại phòng</strong>
               </CardHeader>
-              <CardBody className="py-0 flex flex-row gap-8">
-                <div>
-                  <div className="text-sm text-gray-500">Phòng thường</div>
-                  <div className="text-2xl font-semibold">96</div>
-                </div>
-                <div>
-                  <div className="text-sm text-gray-500">Phòng dịch vụ</div>
-                  <div className="text-2xl font-semibold">3</div>
-                </div>
+              <CardBody className="py-0 flex flex-wrap flex-row gap-8">
+                <>
+                  {statistic?.roomTypeStatistics.map((roomType, i) => (
+                    <>
+                      <div key={"::" + i}>
+                        <div className="text-sm text-gray-500">
+                          {roomType.name}
+                        </div>
+                        <div className="text-2xl font-semibold">
+                          {roomType.totalRooms}
+                        </div>
+                      </div>
+                    </>
+                  ))}
+                </>
               </CardBody>
             </div>
           </div>
@@ -107,13 +136,17 @@ export default function StaffDashboardPage() {
               <CardBody className="py-0 flex flex-row gap-8">
                 <div>
                   <div className="text-sm text-gray-500">Tổng số sinh viên</div>
-                  <div className="text-2xl font-semibold">200</div>
+                  <div className="text-2xl font-semibold">
+                    {statistic?.totalStudents}
+                  </div>
                 </div>
                 <div>
                   <div className="text-sm text-gray-500">
                     Sinh viên đang lưu trú
                   </div>
-                  <div className="text-2xl font-semibold">60</div>
+                  <div className="text-2xl font-semibold">
+                    {statistic?.totalBookedStudents}
+                  </div>
                 </div>
               </CardBody>
             </div>
@@ -138,11 +171,15 @@ export default function StaffDashboardPage() {
               <CardBody className="py-0 flex flex-row gap-8">
                 <div>
                   <div className="text-sm text-gray-500">Tổng hóa đơn</div>
-                  <div className="text-2xl font-semibold">12</div>
+                  <div className="text-2xl font-semibold">
+                    {statistic?.totalInvoices}
+                  </div>
                 </div>
                 <div>
                   <div className="text-sm text-gray-500">Cần thanh toán</div>
-                  <div className="text-2xl font-semibold">1</div>
+                  <div className="text-2xl font-semibold">
+                    {statistic?.totalUnpaidInvoices}
+                  </div>
                 </div>
               </CardBody>
             </div>
