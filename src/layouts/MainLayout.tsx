@@ -1,4 +1,4 @@
-import { Outlet } from "react-router-dom";
+import { Outlet, useNavigate } from "react-router-dom";
 import Sidebar from "./Sidebar";
 import {
   Dropdown,
@@ -15,6 +15,7 @@ export default function MainLayout() {
   const signOut = () => {
     reset();
   };
+  const navigate = useNavigate();
   return (
     <div className="flex">
       <Sidebar />
@@ -36,7 +37,9 @@ export default function MainLayout() {
                 />
               </DropdownTrigger>
               <DropdownMenu aria-label="User Actions" variant="flat">
-                <DropdownItem key="settings">Hồ sơ</DropdownItem>
+                <DropdownItem onClick={() => {
+                  navigate("/profile");
+                }} key="settings">Hồ sơ</DropdownItem>
                 <DropdownItem
                   onClick={() => signOut()}
                   key="logout"

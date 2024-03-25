@@ -213,7 +213,7 @@ export default function BookingDetailModal(props: {
                               <div>
                                 {
                                   SEX_MAP[
-                                    bookingDetail?.checkin_staff.sex ?? "OTHER"
+                                  bookingDetail?.checkin_staff.sex ?? "OTHER"
                                   ]
                                 }
                               </div>
@@ -246,8 +246,8 @@ export default function BookingDetailModal(props: {
                               <div>
                                 {bookingDetail?.checkout_staff?.sex ? (
                                   SEX_MAP[
-                                    bookingDetail?.checkout_staff?.sex ??
-                                      "OTHER"
+                                  bookingDetail?.checkout_staff?.sex ??
+                                  "OTHER"
                                   ]
                                 ) : (
                                   <small>Chưa cập nhật</small>
@@ -293,7 +293,7 @@ export default function BookingDetailModal(props: {
                         <a
                           className="w-full"
                           target="_blank"
-                          href={`mailto:${bookingDetail?.student.email}`}
+                          href={`mailto:${bookingDetail?.student.account.email}`}
                         >
                           <Button color="primary" className="py-6 w-full">
                             <AiOutlineMail />
@@ -308,7 +308,7 @@ export default function BookingDetailModal(props: {
                         </div>
                         <div className="flex items-center justify-between">
                           <div className="opacity-70">Email</div>{" "}
-                          <div>{bookingDetail?.student.email}</div>
+                          <div>{bookingDetail?.student.account.email}</div>
                         </div>
                         <div className="flex items-center justify-between">
                           <div className="opacity-70">Địa chỉ</div>{" "}

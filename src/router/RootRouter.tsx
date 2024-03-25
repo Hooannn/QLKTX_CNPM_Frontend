@@ -3,7 +3,6 @@ import PrivateRoute from "../components/PrivateRoute";
 import DashboardPage from "../pages/DashboardPage";
 import ErrorPage from "../pages/ErrorPage";
 import MainLayout from "../layouts/MainLayout";
-import UsersManagementPage from "../pages/UsersManagementPage";
 import StudentDashboardPage from "../pages/StudentDashboardPage";
 import StaffDashboardPage from "../pages/StaffDashboardPage";
 import StudentInvoicesPage from "../pages/StudentInvoicesPage";
@@ -17,6 +16,7 @@ import StaffBookingTimePage from "../pages/StaffBookingTimePage";
 import StaffBookingsPage from "../pages/StaffBookingsPage";
 import StudentsManagementPage from "../pages/StudentsManagementPage";
 import StaffsManagementPage from "../pages/StaffsManagementPage";
+import ProfilePage from "../pages/ProfilePage";
 const rootRouter = [
   {
     path: "/",
@@ -31,6 +31,10 @@ const rootRouter = [
       {
         path: "/",
         element: <DashboardPage />,
+      },
+      {
+        path: "/profile",
+        element: <ProfilePage />,
       },
       {
         path: "/staffs-management",

@@ -1,4 +1,7 @@
-<svg
+export default function EmptySvg() {
+    return (
+        <>
+            <svg
                 viewBox="0 0 221 161"
                 fill="none"
                 xmlns="http://www.w3.org/2000/svg"
@@ -148,3 +151,6 @@
                     stroke-linejoin="round"
                 ></path>
             </svg>
+        </>
+    );
+}

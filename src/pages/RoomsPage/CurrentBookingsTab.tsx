@@ -90,7 +90,7 @@ function BookingCard({ booking }: { booking: Booking }) {
               </div>
               <div className="text-sm flex items-center justify-between">
                 <div className="opacity-70">Email:</div>
-                <div className="font-semibold">{booking.student.email}</div>
+                <div className="font-semibold">{booking.student.account.email}</div>
               </div>
               <div className="text-sm flex items-center justify-between">
                 <div className="opacity-70">Bắt đầu:</div>
@@ -116,7 +116,7 @@ function BookingCard({ booking }: { booking: Booking }) {
             <a
               className="w-full"
               target="_blank"
-              href={`mailto:${booking.student.email}`}
+              href={`mailto:${booking.student.account.email}`}
             >
               <Button color="primary" className="py-6 w-full">
                 <AiOutlineMail />

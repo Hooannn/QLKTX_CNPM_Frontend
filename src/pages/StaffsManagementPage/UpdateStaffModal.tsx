@@ -22,6 +22,7 @@ type UpdateUserInputs = {
   password: string;
   date_of_birth?: string;
   phone: string;
+  email: string;
   address?: string;
   sex: string;
 };
@@ -106,7 +107,14 @@ export default function UpdateUserModal(props: {
                       label="Họ"
                     />
                     <Input
-                      isDisabled
+                      errorMessage={errors.email?.message}
+                      {...register("email", {
+                        required: "Email là bắt buộc",
+                        pattern: {
+                          value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i,
+                          message: "Email không hợp lệ",
+                        },
+                      })}
                       defaultValue={props.user.email}
                       variant="bordered"
                       size={"md"}

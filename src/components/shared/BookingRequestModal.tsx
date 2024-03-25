@@ -192,7 +192,7 @@ function ChooseRoomStep({
   onRoomSelected: (room: Room) => void;
 }) {
   const { user } = useAuthStore();
-  const isStaff = user?.role === Role.STAFF;
+  const isStaff = user?.account.role === Role.STAFF || user?.account.role === Role.ADMIN;
   const axios = useAxiosIns();
   const getRegionsQuery = useQuery({
     queryKey: ["fetch/regions"],

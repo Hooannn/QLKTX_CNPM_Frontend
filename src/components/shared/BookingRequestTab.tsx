@@ -27,7 +27,7 @@ export default function BookingRequestTab({
 }) {
   const [page, setPage] = useState(1);
   const { user } = useAuthStore();
-  const isStaff = user?.role === Role.STAFF;
+  const isStaff = user?.account.role === Role.STAFF || user?.account.role === Role.ADMIN;
 
   const axios = useAxiosIns();
 
@@ -196,8 +196,8 @@ export default function BookingRequestTab({
                                   <>
                                     {columnKey === "processed_at"
                                       ? dayjs(
-                                          getKeyValue(item, columnKey)
-                                        ).format("DD/MM/YYYY")
+                                        getKeyValue(item, columnKey)
+                                      ).format("DD/MM/YYYY")
                                       : getKeyValue(item, columnKey)}
                                   </>
                                 ) : (

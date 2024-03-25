@@ -74,6 +74,11 @@ export default function ResetPasswordForm() {
               message: "Mật khẩu phải có ít nhất 6 ký tự",
             },
           })}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              handleSubmit(onSubmit)();
+            }
+          }}
           color="primary"
           label="Mật khẩu"
           variant="bordered"
@@ -101,6 +106,11 @@ export default function ResetPasswordForm() {
             validate: (value) =>
               value === watchPassword || "Mật khẩu không khớp",
           })}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              handleSubmit(onSubmit)();
+            }
+          }}
           color="primary"
           label="Nhập lại mật khẩu"
           variant="bordered"

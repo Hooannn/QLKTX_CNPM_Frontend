@@ -22,6 +22,7 @@ import { IResponseData, IUser } from "../../types";
 import { AiOutlineSearch } from "react-icons/ai";
 import { useDebounce } from "@uidotdev/usehooks";
 import StudentCellActions from "./StudentCellActions";
+import { SEX_MAP } from "../../utils/map";
 export default function StaffStudentsPage({
   title,
   filter,
@@ -163,7 +164,7 @@ export default function StaffStudentsPage({
             <TableColumn key="actions">Thao tác</TableColumn>
           </TableHeader>
           <TableBody
-            items={tableItems}
+            items={tableItems.map((item) => ({ ...item, email: item.account.email }))}
             emptyContent={
               <div>
                 <Image
@@ -205,11 +206,16 @@ export default function StaffStudentsPage({
                       <>
                         {getKeyValue(item, columnKey) ? (
                           <>
-                            {columnKey === "date_of_birth"
-                              ? dayjs(getKeyValue(item, columnKey)).format(
-                                  "DD/MM/YYYY"
-                                )
-                              : getKeyValue(item, columnKey)}
+                            {columnKey === "date_of_birth" &&
+                              dayjs(getKeyValue(item, columnKey)).format(
+                                "DD/MM/YYYY"
+                              )}
+                            {columnKey === "sex" &&
+                              SEX_MAP[getKeyValue(item, columnKey)]}
+
+                            {columnKey !== "date_of_birth" &&
+                              columnKey !== "sex" &&
+                              getKeyValue(item, columnKey)}
                           </>
                         ) : (
                           <i>

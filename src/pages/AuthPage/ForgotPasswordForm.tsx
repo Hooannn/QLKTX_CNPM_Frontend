@@ -62,6 +62,11 @@ export default function ForgotPasswordForm() {
           color="primary"
           variant="bordered"
           type="email"
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              handleSubmit(onSubmit)();
+            }
+          }}
           label="Email"
           placeholder="Nhập email của bạn"
         />
