@@ -7,10 +7,8 @@ export default function DashboardPage() {
     switch (user?.account.role) {
       case Role.STUDENT:
         return "/student";
-      case Role.STAFF:
-        return "/staff";
       default:
-        return "/users-management";
+        return "/staff";
     }
   };
   return <Navigate to={redirectPath()} replace />;
