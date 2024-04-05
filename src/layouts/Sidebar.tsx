@@ -34,7 +34,7 @@ export default function Sidebar() {
   };
 
   const menuItems = useMemo(() => {
-    switch (user?.account.role) {
+    switch (user?.account.role.role) {
       case Role.STUDENT:
         return [
           {

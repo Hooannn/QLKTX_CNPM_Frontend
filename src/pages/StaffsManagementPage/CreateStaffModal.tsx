@@ -15,7 +15,6 @@ import { IResponseData, IUser } from "../../types";
 import { onError } from "../../utils/error-handlers";
 import useAxiosIns from "../../hooks/useAxiosIns";
 import { SubmitHandler, useForm } from "react-hook-form";
-import dayjs from "../../libs/dayjs";
 type CreateUserInputs = {
   id: string;
   first_name: string;
@@ -39,18 +38,12 @@ export default function CreateUserModal(props: {
   } = useForm<CreateUserInputs>();
 
   const onSubmit: SubmitHandler<CreateUserInputs> = async (data) => {
-    data.date_of_birth = dayjs(data.date_of_birth).toISOString();
     await createUserMutation.mutateAsync(data);
     props.onClose();
   };
 
   const axios = useAxiosIns();
   const queryClient = useQueryClient();
-
-  const isValidDate = (dateString: string) => {
-    if (!dateString) return true;
-    return dayjs(dateString, "MM/DD/YYYY", true).isValid();
-  };
 
   const createUserMutation = useMutation({
     mutationFn: (params: CreateUserInputs) =>
@@ -151,13 +144,11 @@ export default function CreateUserModal(props: {
                       errorMessage={errors.date_of_birth?.message}
                       {...register("date_of_birth", {
                         required: "Ngày sinh là bắt buộc",
-                        validate: {
-                          validDate: (value) =>
-                            isValidDate(value ?? "") ||
-                            "Ngày sinh phải đúng định dạng (mm/dd/yyyy)",
-                        },
                       })}
-                      placeholder="mm/dd/yyyy"
+                      max={new Date().toISOString().split("T")[0]}
+                      placeholder="dd/mm/yyyy"
+                      date-format="dd/mm/yyyy"
+                      type="date"
                       variant="bordered"
                       size={"md"}
                       label="Ngày sinh"

@@ -192,7 +192,9 @@ function ChooseRoomStep({
   onRoomSelected: (room: Room) => void;
 }) {
   const { user } = useAuthStore();
-  const isStaff = user?.account.role === Role.STAFF || user?.account.role === Role.ADMIN;
+  const isStaff =
+    user?.account.role.role === Role.STAFF ||
+    user?.account.role.role === Role.ADMIN;
   const axios = useAxiosIns();
   const getRegionsQuery = useQuery({
     queryKey: ["fetch/regions"],
@@ -519,8 +521,6 @@ function ConfirmStep({
     Discount | undefined
   >();
 
-  const [autoCreateInvoice, setAutoCreateInvoice] = useState(true);
-
   const axios = useAxiosIns();
 
   const getDiscountQuery = useQuery({
@@ -706,35 +706,22 @@ function ConfirmStep({
           </CardBody>
           <Divider />
           <CardFooter>
-            <div className="flex justify-center w-full gap-4 items-center">
-              <div className="w-1/2">
-                <Checkbox
-                  isSelected={autoCreateInvoice}
-                  onValueChange={setAutoCreateInvoice}
-                  color="primary"
-                  defaultSelected
-                >
-                  Tự động tạo hóa đơn
-                  <br />
-                  <small>
-                    Hóa đơn sẽ được tạo tự động khi phiếu thuê được tạo
-                  </small>
-                </Checkbox>
-              </div>
+            <div className="flex flex-col justify-center w-full gap-2 items-center">
               <Button
                 size="lg"
                 isDisabled={isCalculatingPrice}
                 color="primary"
-                className="w-1/2"
+                className="w-full"
                 onClick={() => {
                   onNext({
                     discount: selectedDiscount,
-                    autoCreateInvoice,
+                    autoCreateInvoice: true,
                   });
                 }}
               >
                 Xác nhận
               </Button>
+              <small>Hóa đơn sẽ được tạo tự động khi phiếu thuê được tạo</small>
             </div>
           </CardFooter>
         </>

@@ -64,6 +64,7 @@ export default function InvoicesTable({
           <TableColumn key="staff_id">Mã quản lý ghi nhận</TableColumn>
           <TableColumn key="total">Tổng tiền</TableColumn>
           <TableColumn key="created_at">Ngày lập</TableColumn>
+          <TableColumn key="due_date">Hạn thanh toán</TableColumn>
           <TableColumn key="paid_at">Ngày thanh toán</TableColumn>
           <TableColumn key="actions">Thao tác</TableColumn>
         </TableHeader>
@@ -74,6 +75,7 @@ export default function InvoicesTable({
           <TableColumn key="staff_id">Mã quản lý ghi nhận</TableColumn>
           <TableColumn key="total">Tổng tiền</TableColumn>
           <TableColumn key="created_at">Ngày lập</TableColumn>
+          <TableColumn key="due_date">Hạn thanh toán</TableColumn>
           <TableColumn key="paid_at">Ngày thanh toán</TableColumn>
         </TableHeader>
       )}
@@ -114,7 +116,9 @@ export default function InvoicesTable({
                   <>
                     {getKeyValue(item, columnKey) ? (
                       <>
-                        {columnKey === "created_at" || columnKey === "paid_at"
+                        {columnKey === "created_at" ||
+                        columnKey === "paid_at" ||
+                        columnKey === "due_date"
                           ? dayjs(getKeyValue(item, columnKey)).format(
                               "DD/MM/YYYY"
                             )

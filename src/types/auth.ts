@@ -4,6 +4,11 @@ export enum Role {
   STUDENT = "STUDENT",
 }
 
+export interface IRole {
+  id: string;
+  role: Role;
+}
+
 export interface IUser {
   id: string;
   phone: string;
@@ -15,7 +20,7 @@ export interface IUser {
   picture?: string;
   account: {
     username: string;
-    role: Role;
+    role: IRole;
     email: string;
   };
 }

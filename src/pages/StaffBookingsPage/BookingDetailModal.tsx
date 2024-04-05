@@ -213,7 +213,7 @@ export default function BookingDetailModal(props: {
                               <div>
                                 {
                                   SEX_MAP[
-                                  bookingDetail?.checkin_staff.sex ?? "OTHER"
+                                    bookingDetail?.checkin_staff.sex ?? "OTHER"
                                   ]
                                 }
                               </div>
@@ -246,8 +246,8 @@ export default function BookingDetailModal(props: {
                               <div>
                                 {bookingDetail?.checkout_staff?.sex ? (
                                   SEX_MAP[
-                                  bookingDetail?.checkout_staff?.sex ??
-                                  "OTHER"
+                                    bookingDetail?.checkout_staff?.sex ??
+                                      "OTHER"
                                   ]
                                 ) : (
                                   <small>Chưa cập nhật</small>
@@ -260,13 +260,16 @@ export default function BookingDetailModal(props: {
 
                       <div className="flex gap-2 items-center flex-col justify-center w-full py-4">
                         <BookingActions
+                          onDeleted={props.onClose}
                           hadInvoice={invoices.length > 0}
+                          hadPaid={invoices.some(
+                            (invoice) => invoice.paid_at !== null
+                          )}
                           booking={bookingDetail}
                         />
                       </div>
                     </div>
                     <div className="h-full flex flex-col items-center gap-3 w-[500px] border-r-1 border-gray pr-5">
-                      <div>Sinh viên thuê</div>
                       <Avatar
                         size="lg"
                         className="w-32 h-32"

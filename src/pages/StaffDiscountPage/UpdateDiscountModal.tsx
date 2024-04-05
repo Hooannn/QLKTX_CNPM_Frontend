@@ -33,19 +33,12 @@ export default function UpdateDiscountModal(props: {
   } = useForm<UpdateInputs>();
 
   const onSubmit: SubmitHandler<UpdateInputs> = async (data) => {
-    data.start_date = dayjs(data.start_date).toISOString();
-    data.end_date = dayjs(data.end_date).toISOString();
     await updateMutation.mutateAsync(data);
     props.onClose();
   };
 
   const axios = useAxiosIns();
   const queryClient = useQueryClient();
-
-  const isValidDate = (dateString: string) => {
-    if (!dateString) return true;
-    return dayjs(dateString, "MM/DD/YYYY", true).isValid();
-  };
 
   const updateMutation = useMutation({
     mutationFn: (params: UpdateInputs) =>
@@ -72,6 +65,7 @@ export default function UpdateDiscountModal(props: {
               <ModalBody>
                 <div className="w-full h-full flex flex-col gap-4">
                   <Input
+                    errorMessage={errors.description?.message}
                     {...register("description", {
                       required: "Mô tả không được để trống",
                     })}
@@ -83,39 +77,35 @@ export default function UpdateDiscountModal(props: {
                   <Input
                     errorMessage={errors.start_date?.message}
                     {...register("start_date", {
-                      validate: {
-                        validDate: (value) =>
-                          isValidDate(value ?? "") ||
-                          "Ngày phải đúng định dạng (mm/dd/yyyy)",
-                      },
+                      required: "Ngày bắt đầu không được để trống",
                     })}
+                    placeholder="dd/mm/yyyy"
+                    date-format="dd/mm/yyyy"
+                    type="date"
                     defaultValue={dayjs(props.discount.start_date)
-                      .format("MM/DD/YYYY")
+                      .format("YYYY-MM-DD")
                       .toString()}
-                    placeholder="mm/dd/yyyy"
                     variant="bordered"
                     size={"md"}
-                    label="Ngày bắt đầu (tùy chọn)"
+                    label="Ngày bắt đầu"
                   />
                   <Input
                     errorMessage={errors.end_date?.message}
                     {...register("end_date", {
-                      validate: {
-                        validDate: (value) =>
-                          isValidDate(value ?? "") ||
-                          "Ngày phải đúng định dạng (mm/dd/yyyy)",
-                      },
+                      required: "Ngày kết thúc không được để trống",
                     })}
+                    placeholder="dd/mm/yyyy"
+                    date-format="dd/mm/yyyy"
+                    type="date"
                     defaultValue={dayjs(props.discount.end_date)
-                      .format("MM/DD/YYYY")
+                      .format("YYYY-MM-DD")
                       .toString()}
-                    placeholder="mm/dd/yyyy"
                     variant="bordered"
                     size={"md"}
-                    label="Ngày kết thúc (tùy chọn)"
+                    label="Ngày kết thúc"
                   />
                   <Input
-                    errorMessage={errors.end_date?.message}
+                    errorMessage={errors.percentage?.message}
                     {...register("percentage", {
                       required: "Phần trăm không được để trống",
                       min: {
@@ -127,6 +117,7 @@ export default function UpdateDiscountModal(props: {
                         message: "Phần trăm không được lớn hơn 100",
                       },
                     })}
+                    type="number"
                     defaultValue={props.discount.percentage.toString()}
                     variant="bordered"
                     size={"md"}

@@ -13,7 +13,6 @@ import { Discount, IResponseData } from "../../types";
 import { onError } from "../../utils/error-handlers";
 import useAxiosIns from "../../hooks/useAxiosIns";
 import { SubmitHandler, useForm } from "react-hook-form";
-import dayjs from "../../libs/dayjs";
 type CreateInputs = {
   start_date: string;
   end_date: string;
@@ -33,19 +32,12 @@ export default function CreateDiscountModal(props: {
   } = useForm<CreateInputs>();
 
   const onSubmit: SubmitHandler<CreateInputs> = async (data) => {
-    data.start_date = dayjs(data.start_date).toISOString();
-    data.end_date = dayjs(data.end_date).toISOString();
     await createMutation.mutateAsync(data);
     props.onClose();
   };
 
   const axios = useAxiosIns();
   const queryClient = useQueryClient();
-
-  const isValidDate = (dateString: string) => {
-    if (!dateString) return true;
-    return dayjs(dateString, "MM/DD/YYYY", true).isValid();
-  };
 
   const createMutation = useMutation({
     mutationFn: (params: CreateInputs) =>
@@ -69,6 +61,7 @@ export default function CreateDiscountModal(props: {
               <ModalBody>
                 <div className="w-full h-full flex flex-col gap-4">
                   <Input
+                    errorMessage={errors.id?.message}
                     {...register("id", {
                       required: "Mã không được để trống",
                     })}
@@ -77,6 +70,7 @@ export default function CreateDiscountModal(props: {
                     label="Mã"
                   />
                   <Input
+                    errorMessage={errors.description?.message}
                     {...register("description", {
                       required: "Mô tả không được để trống",
                     })}
@@ -87,33 +81,29 @@ export default function CreateDiscountModal(props: {
                   <Input
                     errorMessage={errors.start_date?.message}
                     {...register("start_date", {
-                      validate: {
-                        validDate: (value) =>
-                          isValidDate(value ?? "") ||
-                          "Ngày phải đúng định dạng (mm/dd/yyyy)",
-                      },
+                      required: "Ngày bắt đầu không được để trống",
                     })}
-                    placeholder="mm/dd/yyyy"
+                    placeholder="dd/mm/yyyy"
+                    date-format="dd/mm/yyyy"
+                    type="date"
                     variant="bordered"
                     size={"md"}
-                    label="Ngày bắt đầu (tùy chọn)"
+                    label="Ngày bắt đầu"
                   />
                   <Input
                     errorMessage={errors.end_date?.message}
                     {...register("end_date", {
-                      validate: {
-                        validDate: (value) =>
-                          isValidDate(value ?? "") ||
-                          "Ngày phải đúng định dạng (mm/dd/yyyy)",
-                      },
+                      required: "Ngày kết thúc không được để trống",
                     })}
-                    placeholder="mm/dd/yyyy"
+                    placeholder="dd/mm/yyyy"
+                    date-format="dd/mm/yyyy"
+                    type="date"
                     variant="bordered"
                     size={"md"}
-                    label="Ngày kết thúc (tùy chọn)"
+                    label="Ngày kết thúc"
                   />
                   <Input
-                    errorMessage={errors.end_date?.message}
+                    errorMessage={errors.percentage?.message}
                     {...register("percentage", {
                       required: "Phần trăm không được để trống",
                       min: {
@@ -125,6 +115,7 @@ export default function CreateDiscountModal(props: {
                         message: "Phần trăm không được lớn hơn 100",
                       },
                     })}
+                    type="number"
                     variant="bordered"
                     size={"md"}
                     label="Phần trăm giảm"

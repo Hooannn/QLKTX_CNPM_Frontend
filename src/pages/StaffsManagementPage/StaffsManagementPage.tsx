@@ -75,7 +75,8 @@ export default function UsersManagementPage() {
         return true;
       })
       .filter((user) => {
-        if (selectedRole !== "ALL") return user.account.role === selectedRole;
+        if (selectedRole !== "ALL")
+          return user.account.role.role === selectedRole;
         return true;
       });
   };
@@ -202,8 +203,8 @@ export default function UsersManagementPage() {
           <TableBody
             items={tableItems.map((item) => ({
               ...item,
-              role: item.account.role,
-              email: item.account.email
+              role: item.account.role.role,
+              email: item.account.email,
             }))}
             emptyContent={
               <div>

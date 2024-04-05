@@ -82,6 +82,7 @@ export default function UpdateBookingTimeModal(props: {
               <ModalBody>
                 <div className="w-full h-full flex flex-col gap-4">
                   <Input
+                    errorMessage={errors.description?.message}
                     {...register("description", {
                       required: "Mô tả không được để trống",
                     })}
@@ -93,16 +94,14 @@ export default function UpdateBookingTimeModal(props: {
                   <Input
                     errorMessage={errors.start_date?.message}
                     {...register("start_date", {
-                      validate: {
-                        validDate: (value) =>
-                          isValidDate(value ?? "") ||
-                          "Ngày phải đúng định dạng (mm/dd/yyyy)",
-                      },
+                      required: "Ngày bắt đầu không được để trống",
                     })}
+                    placeholder="dd/mm/yyyy"
+                    date-format="dd/mm/yyyy"
+                    type="date"
                     defaultValue={dayjs(props.bookingTime.start_date)
-                      .format("MM/DD/YYYY")
+                      .format("YYYY-MM-DD")
                       .toString()}
-                    placeholder="mm/dd/yyyy"
                     variant="bordered"
                     size={"md"}
                     label="Ngày bắt đầu (tùy chọn)"
@@ -110,16 +109,14 @@ export default function UpdateBookingTimeModal(props: {
                   <Input
                     errorMessage={errors.end_date?.message}
                     {...register("end_date", {
-                      validate: {
-                        validDate: (value) =>
-                          isValidDate(value ?? "") ||
-                          "Ngày phải đúng định dạng (mm/dd/yyyy)",
-                      },
+                      required: "Ngày kết thúc không được để trống",
                     })}
+                    placeholder="dd/mm/yyyy"
+                    date-format="dd/mm/yyyy"
+                    type="date"
                     defaultValue={dayjs(props.bookingTime.end_date)
-                      .format("MM/DD/YYYY")
+                      .format("YYYY-MM-DD")
                       .toString()}
-                    placeholder="mm/dd/yyyy"
                     variant="bordered"
                     size={"md"}
                     label="Ngày kết thúc (tùy chọn)"

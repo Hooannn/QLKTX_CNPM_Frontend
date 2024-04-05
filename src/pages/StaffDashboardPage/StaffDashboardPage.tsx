@@ -42,10 +42,10 @@ export default function StaffDashboardPage() {
             <Spinner size="lg" />
           </div>
         ) : (
-          <div className="flex flex-wrap gap-4 justify-center">
+          <div className="flex flex-wrap gap-4 justify-center w-full max-w-[700px] mx-auto">
             <Card
               radius="sm"
-              className="p-5 w-[500px]"
+              className="p-5 w-full"
               isPressable
               onPress={() => {
                 navigate("/staff/rooms");
@@ -92,7 +92,7 @@ export default function StaffDashboardPage() {
 
             <Card
               radius="sm"
-              className="p-5 w-[500px]"
+              className="p-5 w-full"
               isPressable
               onPress={() => {
                 navigate("/staff/students");
@@ -129,7 +129,7 @@ export default function StaffDashboardPage() {
             </Card>
             <Card
               radius="sm"
-              className="p-5 w-[500px]"
+              className="p-5 w-full"
               isPressable
               onPress={() => {
                 navigate("/staff/invoices");
@@ -165,7 +165,7 @@ export default function StaffDashboardPage() {
 
             <Card
               radius="sm"
-              className="p-5 w-[500px]"
+              className="p-5 w-full"
               isPressable
               onPress={() => {
                 navigate("/staff/room-types");

@@ -30,17 +30,12 @@ export default function CheckoutModal(props: {
   } = useForm<CheckoutInputs>();
 
   const onSubmit: SubmitHandler<CheckoutInputs> = async (data) => {
-    data.checkout_at = dayjs(data.checkout_at).toISOString();
     await checkoutMutation.mutateAsync(data);
     props.onClose();
   };
 
   const axios = useAxiosIns();
   const queryClient = useQueryClient();
-  const isValidDate = (dateString: string) => {
-    if (!dateString) return true;
-    return dayjs(dateString, "MM/DD/YYYY", true).isValid();
-  };
   const checkoutMutation = useMutation({
     mutationFn: (params: CheckoutInputs) =>
       axios.post<IResponseData<Region>>(
@@ -71,16 +66,15 @@ export default function CheckoutModal(props: {
                 </p>
                 <div className="flex flex-col gap-4 w-full">
                   <Input
-                    defaultValue={dayjs().format("MM/DD/YYYY")}
+                    defaultValue={dayjs().format("YYYY-MM-DD")}
                     errorMessage={errors.checkout_at?.message}
                     {...register("checkout_at", {
-                      validate: {
-                        validDate: (value) =>
-                          isValidDate(value ?? "") ||
-                          "Ngày trả phòng phải đúng định dạng (mm/dd/yyyy)",
-                      },
+                      required: "Ngày trả phòng không được để trống",
                     })}
-                    placeholder="mm/dd/yyyy"
+                    placeholder="dd/mm/yyyy"
+                    date-format="dd/mm/yyyy"
+                    type="date"
+                    max={new Date().toISOString().split("T")[0]}
                     variant="bordered"
                     size={"md"}
                     label="Ngày trả phòng"

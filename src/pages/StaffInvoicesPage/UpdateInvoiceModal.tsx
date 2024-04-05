@@ -33,7 +33,6 @@ export default function UpdateInvoiceModal(props: {
   } = useForm<UpdateInputs>();
 
   const onSubmit: SubmitHandler<UpdateInputs> = async (data) => {
-    data.paid_at = dayjs(data.paid_at).toISOString();
     await updateMutation.mutateAsync(data);
     props.onUpdated();
     props.onClose();
@@ -54,11 +53,6 @@ export default function UpdateInvoiceModal(props: {
       queryClient.invalidateQueries(["fetch/unpaidInvoices"]);
     },
   });
-
-  const isValidDate = (dateString: string) => {
-    if (!dateString) return true;
-    return dayjs(dateString, "MM/DD/YYYY", true).isValid();
-  };
   return (
     <>
       <Modal size="2xl" isOpen={props.isOpen} onClose={props.onClose}>
@@ -73,20 +67,19 @@ export default function UpdateInvoiceModal(props: {
                   <Input
                     errorMessage={errors.paid_at?.message}
                     {...register("paid_at", {
-                      validate: {
-                        validDate: (value) =>
-                          isValidDate(value ?? "") ||
-                          "Ngày phải đúng định dạng (mm/dd/yyyy)",
-                      },
+                      required: "Ngày thanh toán là bắt buộc",
                     })}
                     defaultValue={
                       props.invoice.paid_at
                         ? dayjs(props.invoice.paid_at)
-                            .format("MM/DD/YYYY")
+                            .format("YYYY-MM-DD")
                             .toString()
                         : undefined
                     }
-                    placeholder="mm/dd/yyyy"
+                    max={new Date().toISOString().split("T")[0]}
+                    placeholder="dd/mm/yyyy"
+                    date-format="dd/mm/yyyy"
+                    type="date"
                     variant="bordered"
                     size={"md"}
                     label="Ngày thanh toán"

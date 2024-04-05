@@ -39,20 +39,12 @@ export default function UpdateUserModal(props: {
   } = useForm<UpdateUserInputs>();
 
   const onSubmit: SubmitHandler<UpdateUserInputs> = async (data) => {
-    if (!data.date_of_birth) delete data.date_of_birth;
-    else data.date_of_birth = dayjs(data.date_of_birth).toISOString();
-
     await createUserMutation.mutateAsync(data);
     props.onClose();
   };
 
   const axios = useAxiosIns();
   const queryClient = useQueryClient();
-
-  const isValidDate = (dateString: string) => {
-    if (!dateString) return true;
-    return dayjs(dateString, "MM/DD/YYYY", true).isValid();
-  };
 
   const createUserMutation = useMutation({
     mutationFn: (params: UpdateUserInputs) =>
@@ -158,17 +150,17 @@ export default function UpdateUserModal(props: {
                     <Input
                       defaultValue={
                         props.user.date_of_birth
-                          ? dayjs(props.user.date_of_birth).format("MM/DD/YYYY")
+                          ? dayjs(props.user.date_of_birth).format("YYYY-MM-DD")
                           : ""
                       }
                       errorMessage={errors.date_of_birth?.message}
                       {...register("date_of_birth", {
-                        validate: {
-                          validDate: (value) =>
-                            isValidDate(value ?? "") ||
-                            "Ngày sinh phải đúng định dạng (mm/dd/yyyy)",
-                        },
+                        required: "Ngày sinh là bắt buộc",
                       })}
+                      placeholder="dd/mm/yyyy"
+                      type="date"
+                      max={new Date().toISOString().split("T")[0]}
+                      date-format="dd/mm/yyyy"
                       variant="bordered"
                       size={"md"}
                       label="Ngày sinh (tùy chọn)"

@@ -4,7 +4,7 @@ import { Role } from "../../types";
 export default function DashboardPage() {
   const { user } = useAuthStore();
   const redirectPath = () => {
-    switch (user?.account.role) {
+    switch (user?.account.role.role) {
       case Role.STUDENT:
         return "/student";
       default:

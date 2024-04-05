@@ -46,7 +46,8 @@ export default function InvoiceCellActions({
         >
           Sửa
         </Button>
-        {invoice.paid_at === null && (
+        {/*
+          {invoice.paid_at === null && (
           <Button
             size="sm"
             onClick={onOpenDeleteModal}
@@ -57,6 +58,7 @@ export default function InvoiceCellActions({
             Xoá
           </Button>
         )}
+        */}
       </div>
     </>
   );

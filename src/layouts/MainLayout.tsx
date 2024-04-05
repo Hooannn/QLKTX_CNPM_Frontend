@@ -32,14 +32,19 @@ export default function MainLayout() {
                     src: user?.picture,
                   }}
                   className="transition-transform"
-                  description={ROLE_MAP[user?.account.role]}
+                  description={ROLE_MAP[user?.account.role.role]}
                   name={user?.first_name + " " + user?.last_name}
                 />
               </DropdownTrigger>
               <DropdownMenu aria-label="User Actions" variant="flat">
-                <DropdownItem onClick={() => {
-                  navigate("/profile");
-                }} key="settings">Hồ sơ</DropdownItem>
+                <DropdownItem
+                  onClick={() => {
+                    navigate("/profile");
+                  }}
+                  key="settings"
+                >
+                  Hồ sơ
+                </DropdownItem>
                 <DropdownItem
                   onClick={() => signOut()}
                   key="logout"

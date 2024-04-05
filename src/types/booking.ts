@@ -27,6 +27,7 @@ export interface Discount {
   percentage: number;
   description: string;
   start_date: string;
+  due_date: string;
   end_date: string;
   staff: IUser;
 }

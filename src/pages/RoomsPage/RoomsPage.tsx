@@ -20,7 +20,9 @@ import { useState } from "react";
 
 export default function RoomsPage() {
   const { user } = useAuthStore();
-  const isStaff = user?.account.role === Role.STAFF || user?.account.role === Role.ADMIN;
+  const isStaff =
+    user?.account.role.role === Role.STAFF ||
+    user?.account.role.role === Role.ADMIN;
   const axios = useAxiosIns();
   const getRegionsQuery = useQuery({
     queryKey: ["fetch/regions"],
@@ -59,12 +61,18 @@ export default function RoomsPage() {
   };
 
   const filterRegionsWithRooms = () => {
-    const regionWithRooms = shouldShowLookupRooms ? getRegionsWithRooms().filter((region) => region.rooms.some((room) => room.id.toLowerCase().includes(searchKeyword.toLowerCase()))) : getRegionsWithRooms();
+    const regionWithRooms = shouldShowLookupRooms
+      ? getRegionsWithRooms().filter((region) =>
+          region.rooms.some((room) =>
+            room.id.toLowerCase().includes(searchKeyword.toLowerCase())
+          )
+        )
+      : getRegionsWithRooms();
     return regionWithRooms.filter((region) => {
       if (selectedSex !== "ALL") return region.sex === selectedSex;
       return true;
-    })
-  }
+    });
+  };
 
   const {
     isOpen: isCreateRegionModalOpen,
