@@ -17,6 +17,7 @@ import StaffBookingsPage from "../pages/StaffBookingsPage";
 import StudentsManagementPage from "../pages/StudentsManagementPage";
 import StaffsManagementPage from "../pages/StaffsManagementPage";
 import ProfilePage from "../pages/ProfilePage";
+import AccountsManagementPage from "../pages/AccountsManagementPage";
 const rootRouter = [
   {
     path: "/",
@@ -43,6 +44,10 @@ const rootRouter = [
       {
         path: "/students-management",
         element: <StudentsManagementPage />,
+      },
+      {
+        path: "/accounts-management",
+        element: <AccountsManagementPage />,
       },
       {
         path: "/student",

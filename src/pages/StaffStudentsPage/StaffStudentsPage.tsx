@@ -154,6 +154,7 @@ export default function StaffStudentsPage({
         >
           <TableHeader>
             <TableColumn key="id">Mã</TableColumn>
+            <TableColumn key="username">Tên đăng nhập</TableColumn>
             <TableColumn key="first_name">Tên</TableColumn>
             <TableColumn key="last_name">Họ</TableColumn>
             <TableColumn key="email">Email</TableColumn>
@@ -164,7 +165,11 @@ export default function StaffStudentsPage({
             <TableColumn key="actions">Thao tác</TableColumn>
           </TableHeader>
           <TableBody
-            items={tableItems.map((item) => ({ ...item, email: item.account.email }))}
+            items={tableItems.map((item) => ({
+              ...item,
+              email: item.account?.email,
+              username: item.account?.username,
+            }))}
             emptyContent={
               <div>
                 <Image

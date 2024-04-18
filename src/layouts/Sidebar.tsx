@@ -6,6 +6,7 @@ import {
   AiOutlineHome,
   AiOutlineSearch,
   AiOutlineClockCircle,
+  AiOutlineLock,
 } from "react-icons/ai";
 import { FaUserTie } from "react-icons/fa";
 
@@ -147,6 +148,11 @@ export default function Sidebar() {
             to: "/staffs-management",
             icon: <FaUserTie size={25} />,
             label: "Quản lý nhân viên",
+          },
+          {
+            to: "/accounts-management",
+            icon: <AiOutlineLock size={25} />,
+            label: "Quản lý tài khoản",
           },
         ];
     }

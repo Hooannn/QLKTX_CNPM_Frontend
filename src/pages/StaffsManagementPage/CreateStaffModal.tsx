@@ -19,8 +19,6 @@ type CreateUserInputs = {
   id: string;
   first_name: string;
   last_name: string;
-  password: string;
-  email: string;
   date_of_birth: string;
   phone?: string;
   address: string;
@@ -93,29 +91,6 @@ export default function CreateUserModal(props: {
                       variant="bordered"
                       size={"md"}
                       label="Họ"
-                    />
-                    <Input
-                      errorMessage={errors.email?.message}
-                      {...register("email", {
-                        required: "Email là bắt buộc",
-                        pattern: {
-                          value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i,
-                          message: "Email không hợp lệ",
-                        },
-                      })}
-                      variant="bordered"
-                      size={"md"}
-                      label="Email"
-                    />
-                    <Input
-                      errorMessage={errors.password?.message}
-                      {...register("password", {
-                        required: "Mật khẩu là bắt buộc",
-                      })}
-                      variant="bordered"
-                      size={"md"}
-                      type="password"
-                      label="Mật khẩu đăng nhập"
                     />
                   </div>
                   <div className="flex flex-col gap-4 w-full">

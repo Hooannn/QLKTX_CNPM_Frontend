@@ -76,7 +76,7 @@ export default function UsersManagementPage() {
       })
       .filter((user) => {
         if (selectedRole !== "ALL")
-          return user.account.role.role === selectedRole;
+          return user.account?.role.role === selectedRole;
         return true;
       });
   };
@@ -190,6 +190,7 @@ export default function UsersManagementPage() {
         >
           <TableHeader>
             <TableColumn key="id">Mã</TableColumn>
+            <TableColumn key="username">Tên đăng nhập</TableColumn>
             <TableColumn key="first_name">Tên</TableColumn>
             <TableColumn key="last_name">Họ</TableColumn>
             <TableColumn key="email">Email</TableColumn>
@@ -203,8 +204,9 @@ export default function UsersManagementPage() {
           <TableBody
             items={tableItems.map((item) => ({
               ...item,
-              role: item.account.role.role,
-              email: item.account.email,
+              role: item.account?.role.role,
+              email: item.account?.email,
+              username: item.account?.username,
             }))}
             emptyContent={
               <div>

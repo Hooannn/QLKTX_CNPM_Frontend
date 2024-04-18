@@ -18,11 +18,13 @@ export interface IUser {
   first_name: string;
   last_name: string;
   picture?: string;
-  account: {
-    username: string;
-    role: IRole;
-    email: string;
-  };
+  account?: Account;
+}
+
+export interface Account {
+  username: string;
+  role: IRole;
+  email: string;
 }
 
 export interface Credentials {
