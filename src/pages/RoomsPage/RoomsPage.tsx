@@ -169,7 +169,12 @@ export default function RoomsPage() {
                   {filterRegionsWithRooms().map((region) => (
                     <AccordionItem
                       key={region.id}
-                      title={<RegionCardHeader region={region} />}
+                      title={
+                        <RegionCardHeader
+                          region={region}
+                          isReadonly={!isStaff}
+                        />
+                      }
                     >
                       <RegionCard
                         isStaff={isStaff}

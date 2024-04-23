@@ -14,7 +14,6 @@ import { onError } from "../../utils/error-handlers";
 import useAxiosIns from "../../hooks/useAxiosIns";
 import { SubmitHandler, useForm } from "react-hook-form";
 type UpdateAccountInputs = {
-  username: string;
   email: string;
   password: string;
 };
@@ -40,7 +39,10 @@ export default function UpdateAccountModal(props: {
 
   const updateAccountMutation = useMutation({
     mutationFn: (params: UpdateAccountInputs) =>
-      axios.put<IResponseData<IUser>>(`/api/v1/accounts`, params),
+      axios.put<IResponseData<IUser>>(
+        `/api/v1/accounts/${props.account.username}`,
+        params
+      ),
     onError,
     onSuccess(data) {
       toast.success(data.data?.message);
@@ -60,11 +62,8 @@ export default function UpdateAccountModal(props: {
               <ModalBody>
                 <div className="w-full h-full flex gap-4 flex-col">
                   <Input
-                    errorMessage={errors.username?.message}
                     defaultValue={props.account.username}
-                    {...register("username", {
-                      required: "Tên đăng nhập là bắt buộc",
-                    })}
+                    isDisabled
                     variant="bordered"
                     size={"md"}
                     label="Tên đăng nhập"

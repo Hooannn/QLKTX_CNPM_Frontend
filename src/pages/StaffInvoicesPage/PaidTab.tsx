@@ -3,12 +3,19 @@ import useAxiosIns from "../../hooks/useAxiosIns";
 import { IResponseData, Invoice } from "../../types";
 import InvoicesTable from "./InvoicesTable";
 
-export default function PaidTab() {
+export default function PaidTab({ studentId }: { studentId?: string }) {
   const axios = useAxiosIns();
 
   const getInvoicesQuery = useQuery({
-    queryKey: ["fetch/paidInvoices"],
-    queryFn: () => axios.get<IResponseData<Invoice[]>>("/api/v1/invoice/paid"),
+    queryKey: ["fetch/paidInvoices", studentId],
+    queryFn: () =>
+      axios.get<IResponseData<Invoice[]>>(
+        `${
+          studentId
+            ? `/api/v1/invoice/paid/student/${studentId}`
+            : "/api/v1/invoice/paid"
+        }`
+      ),
     refetchOnWindowFocus: false,
   });
 

@@ -18,9 +18,11 @@ import BookingCellActions from "./BookingCellActions";
 export default function BookingsTable({
   bookings,
   isLoading,
+  hideActions = false,
 }: {
   bookings: Booking[];
   isLoading: boolean;
+  hideActions?: boolean;
 }) {
   const [page, setPage] = useState(1);
 
@@ -50,19 +52,35 @@ export default function BookingsTable({
         ) : null
       }
     >
-      <TableHeader>
-        <TableColumn key="id">Mã</TableColumn>
-        <TableColumn key="room_id">Phòng</TableColumn>
-        <TableColumn key="student_id">Mã sinh viên</TableColumn>
-        <TableColumn key="created_at">Ngày lập</TableColumn>
-        <TableColumn key="booking_time_start_date">Ngày bắt đầu</TableColumn>
-        <TableColumn key="booking_time_end_date">Ngày kết thúc</TableColumn>
-        <TableColumn key="checkin_staff_id">Mã quản lý nhận</TableColumn>
-        <TableColumn key="checkout_staff_id">Mã quản lý trả</TableColumn>
-        <TableColumn key="checked_out_at">Ngày trả</TableColumn>
-        <TableColumn key="discount_id">Mã giảm giá</TableColumn>
-        <TableColumn key="actions">Thao tác</TableColumn>
-      </TableHeader>
+      {hideActions ? (
+        <TableHeader>
+          <TableColumn key="id">Mã</TableColumn>
+          <TableColumn key="room_id">Phòng</TableColumn>
+          <TableColumn key="student_id">Mã sinh viên</TableColumn>
+          <TableColumn key="created_at">Ngày lập</TableColumn>
+          <TableColumn key="booking_time_start_date">Ngày bắt đầu</TableColumn>
+          <TableColumn key="booking_time_end_date">Ngày kết thúc</TableColumn>
+          <TableColumn key="checkin_staff_id">Mã quản lý nhận</TableColumn>
+          <TableColumn key="checkout_staff_id">Mã quản lý trả</TableColumn>
+          <TableColumn key="checked_out_at">Ngày trả</TableColumn>
+          <TableColumn key="discount_id">Mã giảm giá</TableColumn>
+        </TableHeader>
+      ) : (
+        <TableHeader>
+          <TableColumn key="id">Mã</TableColumn>
+          <TableColumn key="room_id">Phòng</TableColumn>
+          <TableColumn key="student_id">Mã sinh viên</TableColumn>
+          <TableColumn key="created_at">Ngày lập</TableColumn>
+          <TableColumn key="booking_time_start_date">Ngày bắt đầu</TableColumn>
+          <TableColumn key="booking_time_end_date">Ngày kết thúc</TableColumn>
+          <TableColumn key="checkin_staff_id">Mã quản lý nhận</TableColumn>
+          <TableColumn key="checkout_staff_id">Mã quản lý trả</TableColumn>
+          <TableColumn key="checked_out_at">Ngày trả</TableColumn>
+          <TableColumn key="discount_id">Mã giảm giá</TableColumn>
+          <TableColumn key="actions">Thao tác</TableColumn>
+        </TableHeader>
+      )}
+
       <TableBody
         items={tableItems.map((booking) => ({
           ...booking,

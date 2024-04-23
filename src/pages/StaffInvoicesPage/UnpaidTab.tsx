@@ -3,13 +3,19 @@ import useAxiosIns from "../../hooks/useAxiosIns";
 import { IResponseData, Invoice } from "../../types";
 import InvoicesTable from "./InvoicesTable";
 
-export default function UnpaidTab() {
+export default function UnpaidTab({ studentId }: { studentId?: string }) {
   const axios = useAxiosIns();
   const queryClient = useQueryClient();
   const getInvoicesQuery = useQuery({
-    queryKey: ["fetch/unpaidInvoices"],
+    queryKey: ["fetch/unpaidInvoices", studentId],
     queryFn: () =>
-      axios.get<IResponseData<Invoice[]>>("/api/v1/invoice/unpaid"),
+      axios.get<IResponseData<Invoice[]>>(
+        `${
+          studentId
+            ? `/api/v1/invoice/unpaid/student/${studentId}`
+            : "/api/v1/invoice/unpaid"
+        }`
+      ),
     refetchOnWindowFocus: false,
   });
 
@@ -28,7 +34,7 @@ export default function UnpaidTab() {
           onUpdated={() => {
             queryClient.invalidateQueries(["fetch/unpaidInvoices"]);
           }}
-          updatable={true}
+          updatable={!studentId}
           invoices={invoices}
           isLoading={getInvoicesQuery.isLoading}
         />

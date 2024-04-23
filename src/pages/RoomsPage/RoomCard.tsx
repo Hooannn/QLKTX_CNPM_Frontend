@@ -45,7 +45,7 @@ export default function RoomCard({
         onClose={onDetailModalClose}
       />
       <Card
-        isPressable
+        isPressable={isStaff}
         onPress={() => {
           onRoomClicked ? onRoomClicked(room) : onOpenDetailModal();
         }}

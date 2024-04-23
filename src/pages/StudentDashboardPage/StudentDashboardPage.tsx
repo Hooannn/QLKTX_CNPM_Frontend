@@ -1,6 +1,8 @@
-import { Divider, Image } from "@nextui-org/react";
+import { Divider, Tab, Tabs } from "@nextui-org/react";
 import useAuthStore from "../../stores/auth";
 import dayjs from "../../libs/dayjs";
+import CurrentBookingsTab from "./CurrentBookingsTab";
+import CheckedOutBookingsTab from "./CheckedOutBookingsTab";
 export default function StudentDashboardPage() {
   const { user } = useAuthStore();
   return (
@@ -19,10 +21,14 @@ export default function StudentDashboardPage() {
         </div>
         <Divider />
         <div className="w-full">
-          <div className="w-full flex flex-col items-center py-12 gap-4">
-            <Image src="/Empty.svg" width={200} />
-            <small>Bạn hiện tại chưa thuê phòng nào.</small>
-          </div>
+          <Tabs color="primary" variant="underlined">
+            <Tab key="current" title="Phiếu thuê hiện tại">
+              <CurrentBookingsTab />
+            </Tab>
+            <Tab key="checkedOut" title="Phiếu thuê cũ">
+              <CheckedOutBookingsTab />
+            </Tab>
+          </Tabs>
         </div>
       </div>
     </>
