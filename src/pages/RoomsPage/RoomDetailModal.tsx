@@ -55,6 +55,8 @@ export default function RoomDetailModal(props: {
       <Modal
         size="full"
         hideCloseButton
+        isDismissable={false}
+        scrollBehavior="outside"
         isOpen={props.isOpen}
         onClose={props.onClose}
       >
@@ -67,7 +69,7 @@ export default function RoomDetailModal(props: {
                 </Button>
                 Thông tin chi tiết
               </ModalHeader>
-              <ModalBody className="flex-row">
+              <ModalBody className="flex-row bg-white">
                 {isLoading ? (
                   <div className="w-full flex justify-center">
                     <Spinner size="lg" />

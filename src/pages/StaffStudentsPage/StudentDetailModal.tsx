@@ -27,6 +27,8 @@ export default function StudentDetailModal(props: {
     <>
       <Modal
         size="full"
+        isDismissable={false}
+        scrollBehavior="outside"
         hideCloseButton
         isOpen={props.isOpen}
         onClose={props.onClose}
@@ -40,7 +42,7 @@ export default function StudentDetailModal(props: {
                 </Button>
                 Thông tin chi tiết
               </ModalHeader>
-              <ModalBody className="flex-row">
+              <ModalBody className="flex-row bg-white">
                 <div className="h-full flex flex-col items-center gap-3 w-[500px] border-r-1 border-gray pr-5">
                   <Avatar
                     size="lg"

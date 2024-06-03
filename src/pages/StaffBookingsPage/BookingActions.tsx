@@ -51,7 +51,7 @@ export default function BookingActions({
         booking={booking}
         onClose={onCheckoutModalClose}
       />
-      <Button
+      {/*<Button
         isDisabled={isDisabled || hadInvoice}
         color="primary"
         onClick={onCreateInvoiceModalOpen}
@@ -59,7 +59,7 @@ export default function BookingActions({
         className="py-6 w-full"
       >
         Tạo hoá đơn
-      </Button>
+      </Button>*/}
       <Button
         isDisabled={isDisabled}
         color="primary"

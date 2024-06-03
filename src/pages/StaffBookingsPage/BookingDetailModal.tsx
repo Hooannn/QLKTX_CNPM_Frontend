@@ -64,6 +64,8 @@ export default function BookingDetailModal(props: {
       <Modal
         size="full"
         hideCloseButton
+        isDismissable={false}
+        scrollBehavior="outside"
         isOpen={props.isOpen}
         onClose={props.onClose}
       >
@@ -78,7 +80,7 @@ export default function BookingDetailModal(props: {
               </ModalHeader>
               {getDetailQuery.isLoading ? (
                 <>
-                  <ModalBody className="flex-row">
+                  <ModalBody className="flex-row bg-white">
                     <div className="w-full flex items-center justify-center">
                       <Spinner size="lg" />
                     </div>
@@ -86,7 +88,7 @@ export default function BookingDetailModal(props: {
                 </>
               ) : (
                 <>
-                  <ModalBody className="flex-row">
+                  <ModalBody className="flex-row bg-white">
                     <div className="h-full flex flex-col justify-between items-center w-[500px] border-r-1 border-gray pr-5">
                       <div className="w-full flex flex-col gap-3 items-center">
                         <div className="w-full">
@@ -213,7 +215,7 @@ export default function BookingDetailModal(props: {
                               <div>
                                 {
                                   SEX_MAP[
-                                    bookingDetail?.checkin_staff.sex ?? "OTHER"
+                                  bookingDetail?.checkin_staff.sex ?? "OTHER"
                                   ]
                                 }
                               </div>
@@ -246,8 +248,8 @@ export default function BookingDetailModal(props: {
                               <div>
                                 {bookingDetail?.checkout_staff?.sex ? (
                                   SEX_MAP[
-                                    bookingDetail?.checkout_staff?.sex ??
-                                      "OTHER"
+                                  bookingDetail?.checkout_staff?.sex ??
+                                  "OTHER"
                                   ]
                                 ) : (
                                   <small>Chưa cập nhật</small>
