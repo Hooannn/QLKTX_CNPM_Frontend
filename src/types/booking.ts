@@ -36,6 +36,7 @@ export interface Invoice {
   id: number;
   booking: Booking;
   created_at: string;
+  due_date: string;
   total: number;
   paid_at?: string;
   staff: IUser;
