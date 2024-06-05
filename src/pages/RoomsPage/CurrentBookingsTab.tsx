@@ -55,7 +55,7 @@ function BookingCard({ booking }: { booking: Booking }) {
       <StudentDetailModal
         isOpen={isDetailUserModalOpen}
         onClose={onDetailUserModalClose}
-        user={booking.student}
+        user={{ ...booking.student, email: booking.student.account?.email }}
       />
       <Card isPressable onPress={onOpenDetailUserModal} radius="sm" shadow="sm">
         <CardBody>
