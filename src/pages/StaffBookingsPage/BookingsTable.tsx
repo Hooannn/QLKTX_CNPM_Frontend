@@ -19,15 +19,37 @@ export default function BookingsTable({
   bookings,
   isLoading,
   hideActions = false,
+  endTime,
+  startTime,
+  filteredField
 }: {
   bookings: Booking[];
   isLoading: boolean;
   hideActions?: boolean;
+  endTime?: any;
+  startTime?: any;
+  filteredField?: string;
 }) {
   const [page, setPage] = useState(1);
 
   const filterBookings = () => {
-    return bookings;
+    if (!startTime && !endTime)
+      return bookings;
+    else if (startTime && !endTime)
+      return bookings.filter(booking => {
+        const field = ['start_date', 'end_date'].includes(filteredField ?? "") ? dayjs(booking.booking_time[filteredField]) : dayjs(booking[filteredField])
+        return field.isAfter(startTime)
+      })
+    else if (!startTime && endTime)
+      return bookings.filter(booking => {
+        const field = ['start_date', 'end_date'].includes(filteredField ?? "") ? dayjs(booking.booking_time[filteredField]) : dayjs(booking[filteredField])
+        return field.isBefore(endTime)
+      })
+    else
+      return bookings.filter(booking => {
+        const field = ['start_date', 'end_date'].includes(filteredField ?? "") ? dayjs(booking.booking_time[filteredField]) : dayjs(booking[filteredField])
+        return field.isAfter(startTime) && field.isBefore(endTime)
+      })
   };
 
   const tableItems = filterBookings().slice((page - 1) * 10, page * 10);
@@ -123,10 +145,10 @@ export default function BookingsTable({
                     {getKeyValue(item, columnKey) ? (
                       <>
                         {columnKey === "checked_out_at" ||
-                        columnKey === "created_at"
+                          columnKey === "created_at"
                           ? dayjs(getKeyValue(item, columnKey)).format(
-                              "DD/MM/YYYY"
-                            )
+                            "DD/MM/YYYY"
+                          )
                           : getKeyValue(item, columnKey)}
                       </>
                     ) : (
