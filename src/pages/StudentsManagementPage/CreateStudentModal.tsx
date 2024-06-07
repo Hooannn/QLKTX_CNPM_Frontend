@@ -97,7 +97,7 @@ export default function CreateUserModal(props: {
                     <Input
                       errorMessage={errors.phone?.message}
                       {...register("phone", {
-                        required: false,
+                        required: "Số điện thoại là bắt buộc",
                         pattern: {
                           value: /^\d{10}$/,
                           message: "Số điện thoại không hợp lệ",
@@ -105,9 +105,10 @@ export default function CreateUserModal(props: {
                       })}
                       variant="bordered"
                       size={"md"}
-                      label="Số điện thoại (tùy chọn)"
+                      label="Số điện thoại"
                     />
                     <Input
+                      errorMessage={errors.address?.message}
                       {...register("address", {
                         required: "Địa chỉ là bắt buộc",
                       })}
@@ -142,9 +143,6 @@ export default function CreateUserModal(props: {
                       </SelectItem>
                       <SelectItem key="FEMALE" value="FEMALE">
                         Nữ
-                      </SelectItem>
-                      <SelectItem key="OTHER" value="OTHER">
-                        Khác
                       </SelectItem>
                     </Select>
                   </div>

@@ -147,9 +147,6 @@ export default function InformationTab() {
             <SelectItem key="FEMALE" value="FEMALE">
               Nữ
             </SelectItem>
-            <SelectItem key="OTHER" value="OTHER">
-              Khác
-            </SelectItem>
           </Select>
 
           <Button

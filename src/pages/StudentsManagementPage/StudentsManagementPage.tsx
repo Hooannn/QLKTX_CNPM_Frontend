@@ -124,9 +124,6 @@ export default function UsersManagementPage() {
               <SelectItem key="FEMALE" value="FEMALE">
                 Nữ
               </SelectItem>
-              <SelectItem key="OTHER" value="OTHER">
-                Khác
-              </SelectItem>
             </Select>
             <Button
               onClick={onOpenCreateUserModal}

@@ -125,9 +125,6 @@ export default function StaffStudentsPage({
               <SelectItem key="FEMALE" value="FEMALE">
                 Nữ
               </SelectItem>
-              <SelectItem key="OTHER" value="OTHER">
-                Khác
-              </SelectItem>
             </Select>
           </div>
         </div>

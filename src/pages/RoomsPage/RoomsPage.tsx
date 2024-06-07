@@ -63,10 +63,10 @@ export default function RoomsPage() {
   const filterRegionsWithRooms = () => {
     const regionWithRooms = shouldShowLookupRooms
       ? getRegionsWithRooms().filter((region) =>
-          region.rooms.some((room) =>
-            room.id.toLowerCase().includes(searchKeyword.toLowerCase())
-          )
+        region.rooms.some((room) =>
+          room.id.toLowerCase().includes(searchKeyword.toLowerCase())
         )
+      )
       : getRegionsWithRooms();
     return regionWithRooms.filter((region) => {
       if (selectedSex !== "ALL") return region.sex === selectedSex;
@@ -127,9 +127,6 @@ export default function RoomsPage() {
                 </SelectItem>
                 <SelectItem key="FEMALE" value="FEMALE">
                   Nữ
-                </SelectItem>
-                <SelectItem key="OTHER" value="OTHER">
-                  Khác
                 </SelectItem>
               </Select>
               {isStaff && (

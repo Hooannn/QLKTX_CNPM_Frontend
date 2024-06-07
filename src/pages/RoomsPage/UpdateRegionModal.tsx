@@ -90,9 +90,6 @@ export default function UpdateRegionModal(props: {
                     <SelectItem key="FEMALE" value="FEMALE">
                       Nữ
                     </SelectItem>
-                    <SelectItem key="OTHER" value="OTHER">
-                      Khác
-                    </SelectItem>
                   </Select>
                 </div>
               </ModalBody>

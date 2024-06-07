@@ -155,9 +155,6 @@ export default function UpdateUserModal(props: {
                       <SelectItem key="FEMALE" value="FEMALE">
                         Nữ
                       </SelectItem>
-                      <SelectItem key="OTHER" value="OTHER">
-                        Khác
-                      </SelectItem>
                     </Select>
                   </div>
                 </div>
